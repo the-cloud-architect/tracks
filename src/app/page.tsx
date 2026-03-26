@@ -1,6 +1,38 @@
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EventVenue",
+  name: "Tracks and Champagne",
+  description:
+    "An intimate wedding venue on 17 acres in Chatsworth, Georgia featuring railroad-themed charm, a gazebo ceremony space, and affordable packages.",
+  url: "https://tracksandchampagne.com",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Chatsworth",
+    addressRegion: "GA",
+    addressCountry: "US",
+  },
+  maximumAttendeeCapacity: 40,
+  amenityFeature: [
+    { "@type": "LocationFeatureSpecification", name: "Gazebo ceremony space" },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "Train-depot styled 3 bed / 2 bath house",
+    },
+    {
+      "@type": "LocationFeatureSpecification",
+      name: "17-acre property with ATV trails",
+    },
+    { "@type": "LocationFeatureSpecification", name: "Parking for 25 cars" },
+  ],
+};
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-zinc-50 px-6 py-16 text-zinc-900 sm:px-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 rounded-2xl bg-white p-8 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-500">
           Chatsworth, Georgia
@@ -13,7 +45,7 @@ export default function Home() {
           affordable packages meet. Preview tours open May 1.
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-zinc-200 p-5">
+          <section className="rounded-xl border border-zinc-200 p-5">
             <h2 className="text-lg font-semibold">Venue Highlights</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-zinc-700">
               <li>Gazebo ceremony space for up to 40 guests</li>
@@ -21,8 +53,8 @@ export default function Home() {
               <li>17-acre property with ATV trails and game stations</li>
               <li>Parking for up to 25 cars</li>
             </ul>
-          </div>
-          <div className="rounded-xl border border-zinc-200 p-5">
+          </section>
+          <section className="rounded-xl border border-zinc-200 p-5">
             <h2 className="text-lg font-semibold">Booking Preview</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-zinc-700">
               <li>Tour scheduling calendar (coming next)</li>
@@ -30,7 +62,7 @@ export default function Home() {
               <li>Optional catering and wedding manager add-ons</li>
               <li>Curfew starts at 11:00 PM EST</li>
             </ul>
-          </div>
+          </section>
         </div>
       </div>
     </main>
