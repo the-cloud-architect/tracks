@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
 import { clearSession, getSessionUser } from "@/lib/auth/session";
 import { formatUsd } from "@/lib/packages";
 import { getPrismaClient } from "@/lib/prisma";
+
 import { sendGuestMessage, startInvoiceCheckout } from "./actions";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   searchParams: Promise<{
@@ -29,7 +33,6 @@ export default async function AccountPage({ searchParams }: PageProps) {
   if (!user) {
     redirect("/auth/sign-in?next=/account");
   }
-
 
   const [invoices, threads] = await Promise.all([
     prisma.invoice.findMany({
@@ -157,9 +160,20 @@ export default async function AccountPage({ searchParams }: PageProps) {
               </span>
             ) : null}
             {user.role === "OWNER" ? (
-              <Link href="/admin/inbox" className="text-sm font-medium text-zinc-900">
-                Owner inbox
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/admin/inbox" className="text-sm font-medium text-zinc-900 hover:underline">
+                  Owner inbox
+                </Link>
+                <Link href="/admin/tours" className="text-sm font-medium text-zinc-900 hover:underline">
+                  Tour requests
+                </Link>
+                <Link href="/admin/reservations" className="text-sm font-medium text-zinc-900 hover:underline">
+                  Reservations
+                </Link>
+                <Link href="/admin/availability" className="text-sm font-medium text-zinc-900 hover:underline">
+                  Availability
+                </Link>
+              </div>
             ) : null}
           </div>
 

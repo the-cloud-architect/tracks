@@ -23,7 +23,6 @@ export default function ReservePage() {
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState("");
   const [error, setError] = useState("");
 
   const upcomingDates = useMemo(() => getNextDates(90), []);
@@ -56,7 +55,6 @@ export default function ReservePage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("");
     setError("");
 
     if (!selectedDate) {
@@ -103,11 +101,7 @@ export default function ReservePage() {
       return;
     }
 
-    setStatus(
-      `Reservation lead saved. Deposit checkout placeholder created (${formatUsd(
-        checkoutData.depositCents,
-      )}). Next step: wire this endpoint to Stripe Checkout.`,
-    );
+    window.location.href = checkoutData.checkoutUrl ?? "/reserve/confirmation?status=pending";
   }
 
   return (
@@ -117,7 +111,7 @@ export default function ReservePage() {
           <h1 className="text-3xl font-bold tracking-tight">Reserve Your Date</h1>
           <p className="mt-3 text-zinc-700">
             Select a package, choose an available date, and submit your deposit
-            request. This flow is wired for Stripe checkout integration.
+            to hold your event date.
           </p>
           <p className="mt-2 text-sm text-zinc-600">
             Create an account first if you want to track outstanding bills and
@@ -224,7 +218,6 @@ export default function ReservePage() {
           </form>
 
           {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
-          {status ? <p className="mt-4 text-sm text-emerald-700">{status}</p> : null}
         </section>
 
         <aside className="rounded-2xl bg-white p-7 shadow-sm">
@@ -246,12 +239,11 @@ export default function ReservePage() {
           </div>
 
           <div className="mt-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-700">
-            Stripe integration placeholder:
-            <ul className="mt-2 list-disc space-y-1 pl-5">
-              <li>Replace `/api/deposits/checkout` with Stripe session creation.</li>
-              <li>Store `checkout_session_id` and webhook updates.</li>
-              <li>Mark reservation `paid` after successful payment event.</li>
-            </ul>
+            <p className="font-medium">Secure checkout</p>
+            <p className="mt-1">
+              Your deposit secures the date. Final payment details and event
+              agreement will follow by email after confirmation.
+            </p>
           </div>
         </aside>
       </div>

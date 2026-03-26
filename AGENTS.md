@@ -11,3 +11,7 @@ When build, deploy, runtime, or integration issues occur:
 3. Apply targeted fixes based on evidence.
 4. Re-run diagnostics to confirm resolution.
 Do not guess fixes without validating against observed errors.
+
+## Cloud-agent PR merge rule
+When cloud agents open PRs for this project, merge them immediately by default.
+Only delay merging if the user explicitly asks to hold or review first.
