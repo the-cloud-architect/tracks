@@ -1,19 +1,35 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-
+import { clearSession, getSessionUser } from "@/lib/auth/session";
 import { formatUsd } from "@/lib/packages";
 import { getPrismaClient } from "@/lib/prisma";
-import { clearSession, getSessionUser } from "@/lib/auth/session";
+import { sendGuestMessage, startInvoiceCheckout } from "./actions";
 
-import { sendGuestMessage, simulatePayInvoice } from "./actions";
+type PageProps = {
+  searchParams: Promise<{
+    billingError?: string;
+  }>;
+};
 
-export default async function AccountPage() {
+function getBillingErrorMessage(code: string | undefined): string | null {
+  if (!code) return null;
+  if (code === "missing-invoice") return "Invoice id is missing.";
+  if (code === "invoice-not-found") return "Invoice not found or already paid.";
+  if (code === "missing-checkout-url") return "Stripe did not return a checkout URL.";
+  if (code === "checkout-setup-failed")
+    return "Stripe checkout setup failed. Verify APP_URL and STRIPE_SECRET_KEY.";
+  return "Could not start checkout.";
+}
+
+export default async function AccountPage({ searchParams }: PageProps) {
   const prisma = getPrismaClient();
   const user = await getSessionUser();
+  const params = await searchParams;
 
   if (!user) {
     redirect("/auth/sign-in?next=/account");
   }
+
 
   const [invoices, threads] = await Promise.all([
     prisma.invoice.findMany({
@@ -30,6 +46,8 @@ export default async function AccountPage() {
             id: true,
             body: true,
             senderRole: true,
+            recipientRole: true,
+            readAt: true,
             createdAt: true,
           },
         },
@@ -40,6 +58,30 @@ export default async function AccountPage() {
   const outstanding = invoices
     .filter((invoice) => invoice.status === "DUE")
     .reduce((sum, invoice) => sum + invoice.amountCents, 0);
+
+  const unreadCount = threads.reduce(
+    (count, thread) =>
+      count +
+      thread.messages.filter(
+        (message) => message.recipientRole === "GUEST" && !message.readAt,
+      ).length,
+    0,
+  );
+
+  const billingError = getBillingErrorMessage(params.billingError);
+
+  if (unreadCount > 0) {
+    await prisma.message.updateMany({
+      where: {
+        thread: { guestId: user.id },
+        recipientRole: "GUEST",
+        readAt: null,
+      },
+      data: {
+        readAt: new Date(),
+      },
+    });
+  }
 
   return (
     <main className="px-6 py-14 sm:px-10">
@@ -57,10 +99,7 @@ export default async function AccountPage() {
                 redirect("/");
               }}
             >
-              <button
-                type="submit"
-                className="rounded border border-zinc-300 px-3 py-1 text-sm"
-              >
+              <button type="submit" className="rounded border border-zinc-300 px-3 py-1 text-sm">
                 Sign out
               </button>
             </form>
@@ -70,6 +109,12 @@ export default async function AccountPage() {
             <p className="text-sm text-zinc-600">Outstanding balance</p>
             <p className="text-2xl font-semibold">{formatUsd(outstanding)}</p>
           </div>
+
+          {billingError ? (
+            <p className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {billingError}
+            </p>
+          ) : null}
 
           <h2 className="text-lg font-semibold">Invoices</h2>
           {invoices.length === 0 ? (
@@ -87,13 +132,13 @@ export default async function AccountPage() {
                   </p>
                   <p className="text-sm">Status: {invoice.status}</p>
                   {invoice.status === "DUE" ? (
-                    <form action={simulatePayInvoice} className="mt-3">
+                    <form action={startInvoiceCheckout} className="mt-3">
                       <input type="hidden" name="invoiceId" value={invoice.id} />
                       <button
                         type="submit"
                         className="rounded bg-zinc-900 px-3 py-1 text-sm text-white"
                       >
-                        Pay now (demo)
+                        Pay now
                       </button>
                     </form>
                   ) : null}
@@ -106,6 +151,11 @@ export default async function AccountPage() {
         <section className="space-y-4 rounded-2xl bg-white p-7 shadow-sm">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Inbox</h2>
+            {unreadCount > 0 ? (
+              <span className="rounded-full bg-zinc-900 px-2 py-0.5 text-xs font-medium text-white">
+                {unreadCount} unread
+              </span>
+            ) : null}
             {user.role === "OWNER" ? (
               <Link href="/admin/inbox" className="text-sm font-medium text-zinc-900">
                 Owner inbox
