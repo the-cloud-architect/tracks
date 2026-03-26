@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-zinc-50 px-6 py-16 text-zinc-900 sm:px-12">
@@ -23,13 +25,27 @@ export default function Home() {
             </ul>
           </div>
           <div className="rounded-xl border border-zinc-200 p-5">
-            <h2 className="text-lg font-semibold">Booking Preview</h2>
+            <h2 className="text-lg font-semibold">Book Your Day</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-zinc-700">
-              <li>Tour scheduling calendar (coming next)</li>
-              <li>Online deposit checkout (coming next)</li>
               <li>Optional catering and wedding manager add-ons</li>
               <li>Curfew starts at 11:00 PM EST</li>
             </ul>
+            <div className="mt-5 flex flex-col gap-3">
+              <Link
+                href="/tour"
+                className="flex items-center justify-between rounded-lg bg-zinc-900 px-4 py-3 text-sm font-semibold text-white hover:bg-zinc-700"
+              >
+                Schedule a Preview Tour
+                <span aria-hidden>→</span>
+              </Link>
+              <Link
+                href="/reserve"
+                className="flex items-center justify-between rounded-lg border border-zinc-900 px-4 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-50"
+              >
+                Reserve Your Date
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
