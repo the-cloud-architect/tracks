@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 import { getPrismaClient } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/auth/session";
 
