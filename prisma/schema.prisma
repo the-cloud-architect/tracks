@@ -10,6 +10,10 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+enum UserRole {
+  OWNER
+  GUEST
+}
 
 enum PackageTier {
   GAZEBO_ONLY
@@ -23,6 +27,12 @@ enum ReservationStatus {
   paid
   canceled
 }
+
+enum InvoiceStatus {
+  DUE
+  PAID
+  VOID
+}
 model TourRequest {
   id               String   @id @default(cuid())
   fullName         String
@@ -31,6 +41,20 @@ model TourRequest {
   preferredDate    DateTime?
   message          String?
   createdAt        DateTime @default(now())
+}
+
+model User {
+  id           String            @id @default(cuid())
+  name         String?
+  email        String            @unique
+  passwordHash String
+  role         UserRole          @default(GUEST)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  reservations ReservationLead[] @relation("GuestReservations")
+  invoices     Invoice[]
+  threads      MessageThread[]   @relation("GuestThreads")
+  messages     Message[]         @relation("SenderMessages")
 }
 
 model ReservationLead {
@@ -45,8 +69,12 @@ model ReservationLead {
   stripeCheckoutId      String?
   stripePaymentIntentId String?
   notes                 String?
+  guestId               String?
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
+  guest                 User?             @relation("GuestReservations", fields: [guestId], references: [id])
+  invoices              Invoice[]
+  threads               MessageThread[]
 }
 
 model AvailabilityBlock {
@@ -54,4 +82,54 @@ model AvailabilityBlock {
   date      DateTime @unique
   reason    String?
   createdAt DateTime @default(now())
+}
+
+model Invoice {
+  id                String          @id @default(cuid())
+  guestId           String
+  reservationLeadId String?
+  description       String
+  amountCents       Int
+  dueDate           DateTime
+  status            InvoiceStatus   @default(DUE)
+  stripeInvoiceId   String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  guest             User            @relation(fields: [guestId], references: [id])
+  reservationLead   ReservationLead? @relation(fields: [reservationLeadId], references: [id])
+  payments          Payment[]
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  invoiceId       String
+  amountCents     Int
+  status          String   @default("pending")
+  paidAt          DateTime?
+  externalRef     String?
+  createdAt       DateTime @default(now())
+  invoice         Invoice  @relation(fields: [invoiceId], references: [id])
+}
+
+model MessageThread {
+  id                String           @id @default(cuid())
+  guestId           String
+  reservationLeadId String?
+  subject           String
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  guest             User             @relation("GuestThreads", fields: [guestId], references: [id])
+  reservationLead   ReservationLead? @relation(fields: [reservationLeadId], references: [id])
+  messages          Message[]
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  threadId   String
+  senderId   String
+  senderRole UserRole
+  body       String
+  createdAt  DateTime @default(now())
+  thread     MessageThread @relation(fields: [threadId], references: [id])
+  sender     User      @relation("SenderMessages", fields: [senderId], references: [id])
 }

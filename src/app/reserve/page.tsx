@@ -119,6 +119,10 @@ export default function ReservePage() {
             Select a package, choose an available date, and submit your deposit
             request. This flow is wired for Stripe checkout integration.
           </p>
+          <p className="mt-2 text-sm text-zinc-600">
+            Create an account first if you want to track outstanding bills and
+            messages in your dashboard.
+          </p>
 
           <form className="mt-8 grid gap-4" onSubmit={handleSubmit}>
             <label className="grid gap-2">

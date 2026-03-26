@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSessionUser } from "@/lib/auth/session";
 
 import { parseDateInput } from "@/lib/dates";
 import { getPackageByTier } from "@/lib/packages";
@@ -6,6 +7,7 @@ import { getPrismaClient } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   const prisma = getPrismaClient();
+  const sessionUser = await getSessionUser();
   const body = await request.json();
 
   const fullName = String(body.fullName ?? "").trim();
@@ -57,12 +59,13 @@ export async function POST(request: NextRequest) {
 
   const reservationLead = await prisma.reservationLead.create({
     data: {
-      fullName,
-      email,
+      fullName: sessionUser?.name || fullName,
+      email: sessionUser?.email || email,
       packageTier: pkg.key as never,
       eventDate,
       expectedGuests,
       depositCents: pkg.depositCents,
+      guestId: sessionUser?.id,
     },
     select: {
       id: true,
@@ -72,6 +75,28 @@ export async function POST(request: NextRequest) {
       paymentStatus: true,
     },
   });
+
+  if (sessionUser) {
+    await prisma.$transaction([
+      prisma.invoice.create({
+        data: {
+          guestId: sessionUser.id,
+          reservationLeadId: reservationLead.id,
+          description: `${pkg.name} reservation deposit`,
+          amountCents: pkg.depositCents,
+          dueDate: new Date(),
+          status: "DUE",
+        },
+      }),
+      prisma.messageThread.create({
+        data: {
+          guestId: sessionUser.id,
+          reservationLeadId: reservationLead.id,
+          subject: `Reservation request: ${pkg.name}`,
+        },
+      }),
+    ]);
+  }
 
   return NextResponse.json({
     ok: true,
