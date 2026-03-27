@@ -2,7 +2,12 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-import { formatUsd, type PackageTier, venuePackages } from "@/lib/packages";
+import {
+  DEFAULT_VENUE_PACKAGES,
+  formatUsd,
+  type PackageTier,
+  type VenuePackage,
+} from "@/lib/packages-shared";
 
 function getNextDates(days: number): string[] {
   const dates: string[] = [];
@@ -18,7 +23,8 @@ function getNextDates(days: number): string[] {
 }
 
 export default function ReservePage() {
-  const [packageTier, setPackageTier] = useState<PackageTier>(venuePackages[0].key);
+  const [packages, setPackages] = useState<VenuePackage[]>(DEFAULT_VENUE_PACKAGES);
+  const [packageTier, setPackageTier] = useState<PackageTier>(DEFAULT_VENUE_PACKAGES[0].key);
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -27,24 +33,50 @@ export default function ReservePage() {
 
   const upcomingDates = useMemo(() => getNextDates(90), []);
   const selectedPackage = useMemo(
-    () => venuePackages.find((pkg) => pkg.key === packageTier) ?? venuePackages[0],
-    [packageTier],
+    () => packages.find((pkg) => pkg.key === packageTier) ?? packages[0],
+    [packageTier, packages],
   );
 
   useEffect(() => {
     let isMounted = true;
 
-    async function loadAvailability() {
-      const response = await fetch("/api/availability");
-      const data = await response.json();
-      if (isMounted) {
-        setUnavailableDates(data.unavailableDates ?? []);
+    async function loadPackages() {
+      const response = await fetch("/api/packages");
+      if (!response.ok) {
+        throw new Error("Package request failed.");
+      }
+      const data = (await response.json()) as { packages?: VenuePackage[] };
+      if (isMounted && data.packages && data.packages.length > 0) {
+        setPackages(data.packages);
+        const requestedPackageTier = String(
+          new URLSearchParams(window.location.search).get("packageTier") ?? "",
+        ).trim();
+        const preferred = data.packages.find((pkg) => pkg.key === requestedPackageTier);
+        if (preferred) {
+          setPackageTier(preferred.key);
+        } else if (!data.packages.find((pkg) => pkg.key === packageTier)) {
+          setPackageTier(data.packages[0].key);
+        }
       }
     }
 
-    loadAvailability().catch(() => {
+    async function loadAvailability() {
+      const response = await fetch("/api/availability");
+      if (!response.ok) {
+        throw new Error("Availability request failed.");
+      }
+      const data = (await response.json()) as {
+        unavailableDates?: string[];
+      };
       if (isMounted) {
-        setError("Could not load availability right now.");
+        setUnavailableDates(data.unavailableDates ?? []);
+        setError("");
+      }
+    }
+
+    Promise.all([loadPackages(), loadAvailability()]).catch(() => {
+      if (isMounted) {
+        setError("Could not load reservation settings right now.");
       }
     });
 
@@ -65,50 +97,74 @@ export default function ReservePage() {
     setIsSubmitting(true);
     const formData = new FormData(event.currentTarget);
 
-    const reservationResponse = await fetch("/api/reservations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName: formData.get("fullName"),
-        email: formData.get("email"),
-        expectedGuests: formData.get("expectedGuests"),
-        packageTier,
-        eventDate: selectedDate,
-      }),
-    });
+    try {
+      const reservationResponse = await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: formData.get("fullName"),
+          email: formData.get("email"),
+          expectedGuests: formData.get("expectedGuests"),
+          packageTier,
+          eventDate: selectedDate,
+        }),
+      });
 
-    const reservationData = await reservationResponse.json();
-    if (!reservationResponse.ok) {
+      let reservationData:
+        | { error?: string; reservationLead?: { id: string } }
+        | null = null;
+      try {
+        reservationData = (await reservationResponse.json()) as {
+          error?: string;
+          reservationLead?: { id: string };
+        };
+      } catch {
+        reservationData = null;
+      }
+
+      if (!reservationResponse.ok || !reservationData?.reservationLead?.id) {
+        setError(reservationData?.error ?? "Could not create reservation lead.");
+        return;
+      }
+
+      const checkoutResponse = await fetch("/api/deposits/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reservationId: reservationData.reservationLead.id,
+          termsAccepted,
+        }),
+      });
+
+      let checkoutData: { error?: string; checkoutUrl?: string } | null = null;
+      try {
+        checkoutData = (await checkoutResponse.json()) as {
+          error?: string;
+          checkoutUrl?: string;
+        };
+      } catch {
+        checkoutData = null;
+      }
+
+      if (!checkoutResponse.ok) {
+        setError(checkoutData?.error ?? "Could not start checkout.");
+        return;
+      }
+
+      window.location.href =
+        checkoutData?.checkoutUrl ?? "/reserve/confirmation?status=pending";
+    } catch {
+      setError("Could not start checkout right now. Please try again.");
+    } finally {
       setIsSubmitting(false);
-      setError(reservationData.error ?? "Could not create reservation lead.");
-      return;
     }
-
-    const checkoutResponse = await fetch("/api/deposits/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        reservationId: reservationData.reservationLead.id,
-        termsAccepted,
-      }),
-    });
-
-    const checkoutData = await checkoutResponse.json();
-    setIsSubmitting(false);
-
-    if (!checkoutResponse.ok) {
-      setError(checkoutData.error ?? "Could not start checkout.");
-      return;
-    }
-
-    window.location.href = checkoutData.checkoutUrl ?? "/reserve/confirmation?status=pending";
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-16 text-zinc-900 sm:px-12">
-      <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <section className="rounded-2xl bg-white p-7 shadow-sm">
-          <h1 className="text-3xl font-bold tracking-tight">Reserve Your Date</h1>
+    <main className="min-h-screen bg-zinc-50 px-4 py-10 text-zinc-900 sm:px-8 sm:py-14 lg:px-12">
+      <div className="mx-auto grid w-full max-w-5xl gap-4 sm:gap-6 lg:grid-cols-[1.2fr_1fr]">
+        <section className="rounded-2xl bg-white p-5 shadow-sm sm:p-7">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Reserve Your Date</h1>
           <p className="mt-3 text-zinc-700">
             Select a package, choose an available date, and submit your deposit
             to hold your event date.
@@ -118,13 +174,13 @@ export default function ReservePage() {
             messages in your dashboard.
           </p>
 
-          <form className="mt-8 grid gap-4" onSubmit={handleSubmit}>
+          <form className="mt-6 grid gap-4 sm:mt-8" onSubmit={handleSubmit}>
             <label className="grid gap-2">
               <span className="text-sm font-medium">Full name</span>
               <input
                 name="fullName"
                 required
-                className="rounded-lg border border-zinc-300 px-3 py-2"
+                className="rounded-lg border border-zinc-300 px-3 py-2.5 text-base"
               />
             </label>
 
@@ -134,7 +190,7 @@ export default function ReservePage() {
                 name="email"
                 type="email"
                 required
-                className="rounded-lg border border-zinc-300 px-3 py-2"
+                className="rounded-lg border border-zinc-300 px-3 py-2.5 text-base"
               />
             </label>
 
@@ -145,7 +201,7 @@ export default function ReservePage() {
                 type="number"
                 min={1}
                 max={40}
-                className="rounded-lg border border-zinc-300 px-3 py-2"
+                className="rounded-lg border border-zinc-300 px-3 py-2.5 text-base"
               />
             </label>
 
@@ -154,9 +210,9 @@ export default function ReservePage() {
               <select
                 value={packageTier}
                 onChange={(e) => setPackageTier(e.target.value as PackageTier)}
-                className="rounded-lg border border-zinc-300 px-3 py-2"
+                className="rounded-lg border border-zinc-300 px-3 py-2.5 text-base"
               >
-                {venuePackages.map((pkg) => (
+                {packages.map((pkg) => (
                   <option key={pkg.key} value={pkg.key}>
                     {pkg.name} — deposit {formatUsd(pkg.depositCents)}
                   </option>
@@ -168,7 +224,7 @@ export default function ReservePage() {
               <span className="text-sm font-medium">
                 Choose an available event date
               </span>
-              <div className="grid max-h-64 grid-cols-2 gap-2 overflow-auto rounded-lg border border-zinc-300 p-3 sm:grid-cols-3">
+              <div className="grid max-h-64 grid-cols-2 gap-2 overflow-auto rounded-lg border border-zinc-300 p-2.5 sm:grid-cols-3 sm:p-3">
                 {upcomingDates.map((date) => {
                   const unavailable = unavailableDates.includes(date);
                   const selected = selectedDate === date;
@@ -180,7 +236,7 @@ export default function ReservePage() {
                       disabled={unavailable}
                       onClick={() => setSelectedDate(date)}
                       className={[
-                        "rounded-md border px-2 py-1 text-sm",
+                        "rounded-md border px-2 py-1.5 text-sm",
                         unavailable
                           ? "cursor-not-allowed border-zinc-200 bg-zinc-100 text-zinc-400"
                           : selected
@@ -211,7 +267,7 @@ export default function ReservePage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-lg bg-zinc-900 px-4 py-2 font-medium text-white disabled:opacity-60"
+              className="w-full rounded-lg bg-zinc-900 px-4 py-3 font-medium text-white disabled:opacity-60 sm:w-fit sm:py-2"
             >
               {isSubmitting ? "Preparing checkout..." : "Reserve and pay deposit"}
             </button>
@@ -220,8 +276,8 @@ export default function ReservePage() {
           {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
         </section>
 
-        <aside className="rounded-2xl bg-white p-7 shadow-sm">
-          <h2 className="text-xl font-semibold">{selectedPackage.name}</h2>
+        <aside className="rounded-2xl bg-white p-5 shadow-sm sm:p-7">
+          <h2 className="text-lg font-semibold sm:text-xl">{selectedPackage.name}</h2>
           <p className="mt-1 text-zinc-700">{selectedPackage.summary}</p>
           <div className="mt-5 grid gap-2 text-sm">
             <p>

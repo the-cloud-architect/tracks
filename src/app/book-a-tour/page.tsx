@@ -27,24 +27,34 @@ export default function BookATourPage() {
       message: formData.get("message"),
     };
 
-    const response = await fetch("/api/tours", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch("/api/tours", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await response.json();
-    setIsSubmitting(false);
+      let data: { error?: string } | null = null;
+      try {
+        data = (await response.json()) as { error?: string };
+      } catch {
+        data = null;
+      }
 
-    if (!response.ok) {
-      setError(data.error ?? "Could not submit your request.");
-      return;
+      if (!response.ok) {
+        setError(data?.error ?? "Could not submit your request.");
+        return;
+      }
+
+      event.currentTarget.reset();
+      setStatus(
+        "Tour request received. We will reach out shortly to confirm your preview visit.",
+      );
+    } catch {
+      setError("Could not submit your request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    event.currentTarget.reset();
-    setStatus(
-      "Tour request received. We will reach out shortly to confirm your preview visit.",
-    );
   }
 
   return (

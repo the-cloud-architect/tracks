@@ -15,7 +15,7 @@ const routes = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return routes.map((route) => ({
-    url: `https://tracksandchampagne.com/${route}`.replace(/\/$/, ""),
+    url: `https://weddingtracks.org/${route}`.replace(/\/$/, ""),
     lastModified: new Date(),
   }));
 }

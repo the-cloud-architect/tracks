@@ -33,6 +33,15 @@ enum InvoiceStatus {
   PAID
   VOID
 }
+enum MediaType {
+  PHOTO
+  VIDEO
+}
+
+enum MediaStatus {
+  ACTIVE
+  ARCHIVED
+}
 model TourRequest {
   id               String   @id @default(cuid())
   fullName         String
@@ -135,4 +144,41 @@ model Message {
   createdAt  DateTime @default(now())
   thread     MessageThread @relation(fields: [threadId], references: [id])
   sender     User      @relation("SenderMessages", fields: [senderId], references: [id])
+}
+
+model MediaAsset {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  type        MediaType
+  status      MediaStatus @default(ACTIVE)
+  objectKey   String      @unique
+  mimeType    String
+  sizeBytes   Int
+  width       Int?
+  height      Int?
+  durationSec Int?
+  sourceUrl   String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model PackageConfig {
+  tier         PackageTier @id
+  priceCents   Int
+  depositCents Int
+  updatedAt    DateTime    @updatedAt
+}
+
+model PointOfInterest {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  latitude    Float
+  longitude   Float
+  externalUrl String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

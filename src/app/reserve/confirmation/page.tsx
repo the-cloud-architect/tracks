@@ -8,9 +8,9 @@ type PageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Reservation Status | Tracks and Champagne",
+  title: "Reservation Status | Wedding Tracks",
   description:
-    "View your reservation deposit status and next steps for Tracks and Champagne.",
+    "View your reservation deposit status and next steps for Wedding Tracks.",
 };
 
 export default async function ReservationConfirmationPage({

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Tracks and Champagne",
+  title: "Terms & Conditions | Wedding Tracks",
   description:
-    "Terms and conditions for venue tours, reservations, deposits, and event policies at Tracks and Champagne.",
+    "Terms and conditions for venue tours, reservations, deposits, and event policies at Wedding Tracks.",
 };
 
 export default function TermsPage() {
@@ -15,7 +15,7 @@ export default function TermsPage() {
         <div className="mt-6 space-y-5 text-zinc-700">
           <p>
             Reservation dates are confirmed after receipt of deposit and written
-            confirmation from Tracks and Champagne.
+            confirmation from Wedding Tracks.
           </p>
           <p>
             Deposits are applied toward your package total. Final payment timing

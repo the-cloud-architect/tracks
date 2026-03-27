@@ -81,17 +81,18 @@ export async function createOwnerInvoice(formData: FormData) {
     return;
   }
 
-  const reservation =
-    packageTier.length > 0 && getPackageByTier(packageTier)
-      ? await prisma.reservationLead.findFirst({
-          where: {
-            guestId: guest.id,
-            packageTier: packageTier as never,
-          },
-          orderBy: { createdAt: "desc" },
-          select: { id: true },
-        })
-      : null;
+  const selectedPackage =
+    packageTier.length > 0 ? await getPackageByTier(packageTier) : null;
+  const reservation = selectedPackage
+    ? await prisma.reservationLead.findFirst({
+        where: {
+          guestId: guest.id,
+          packageTier: packageTier as never,
+        },
+        orderBy: { createdAt: "desc" },
+        select: { id: true },
+      })
+    : null;
 
   await prisma.invoice.create({
     data: {

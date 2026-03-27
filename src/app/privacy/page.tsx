@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Tracks and Champagne",
+  title: "Privacy Policy | Wedding Tracks",
   description:
-    "Privacy policy for Tracks and Champagne website visitors, tour requests, and reservation leads.",
+    "Privacy policy for Wedding Tracks website visitors, tour requests, and reservation leads.",
 };
 
 export default function PrivacyPage() {

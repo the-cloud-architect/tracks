@@ -15,3 +15,7 @@ Do not guess fixes without validating against observed errors.
 ## Cloud-agent PR merge rule
 When cloud agents open PRs for this project, merge them immediately by default.
 Only delay merging if the user explicitly asks to hold or review first.
+
+## Vercel framework preset rule
+For this project, always set the Vercel Framework Preset to Next.js (never "Other").
+If it is set to "Other", deployments can publish like static output and return platform NOT_FOUND.

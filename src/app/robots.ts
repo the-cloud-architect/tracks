@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://tracksandchampagne.com/sitemap.xml",
+    sitemap: "https://weddingtracks.org/sitemap.xml",
   };
 }

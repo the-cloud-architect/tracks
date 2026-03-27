@@ -1,26 +1,184 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f3ef;
+  --foreground: #1e1b18;
+  --accent: #7b5b43;
+  --accent-soft: #d9c2ab;
+  --card: #fffdfa;
+}
+
+button,
+a[class*="rounded"],
+header nav a {
+  letter-spacing: 0.07em;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-cormorant);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-cinzel);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  font-size: 1.03rem;
+  line-height: 1.6;
+  letter-spacing: 0.012em;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-cinzel), "Cinzel", "Times New Roman", serif;
+  letter-spacing: 0.03em;
+}
+
+.romantic-bg {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(217, 194, 171, 0.45), transparent 32%),
+    radial-gradient(circle at 80% 0%, rgba(143, 110, 83, 0.22), transparent 33%),
+    linear-gradient(180deg, #fef9f5 0%, #f7f3ef 38%, #f2ece6 100%);
+}
+
+.soft-panel {
+  background: color-mix(in srgb, var(--card) 92%, white);
+  box-shadow:
+    0 1px 0 rgba(79, 59, 42, 0.04),
+    0 12px 42px rgba(62, 45, 31, 0.08);
+  border: 1px solid rgba(121, 87, 61, 0.12);
+}
+
+.eyebrow {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--accent) 85%, black);
+}
+
+.hero-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: min(21rem, 76vw);
+}
+
+.hero-divider span {
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+}
+
+.hero-divider span:nth-child(1),
+.hero-divider span:nth-child(3) {
+  flex: 1;
+}
+
+.hero-divider span:nth-child(2) {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.62));
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.42);
+}
+
+.hero-dropcap {
+  float: left;
+  font-family: var(--font-cinzel), "Cinzel", Georgia, serif;
+  font-size: 1.9em;
+  line-height: 0.95;
+  padding-right: 0.2em;
+  margin-top: 0.08em;
+  color: #fdf5ea;
+}
+
+body:has(main[data-home="true"]) > header {
+  display: none;
+}
+
+@keyframes gentleRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  main h1,
+  main h2,
+  main h3,
+  main p,
+  main li,
+  main label,
+  main input,
+  main textarea,
+  main button,
+  main a {
+    animation: gentleRise 0.55s ease both;
+  }
+
+  main button,
+  main a {
+    transition:
+      transform 220ms ease,
+      opacity 220ms ease,
+      box-shadow 220ms ease,
+      background-color 220ms ease,
+      color 220ms ease;
+  }
+
+  main button:hover,
+  main a:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 1.08rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .eyebrow {
+    letter-spacing: 0.15em;
+    font-size: 0.66rem;
+  }
+
+  button,
+  a[class*="rounded"],
+  header nav a {
+    letter-spacing: 0.045em;
+  }
+
+  .soft-panel {
+    border-radius: 1rem;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  button {
+    min-height: 2.5rem;
+  }
 }

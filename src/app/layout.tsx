@@ -1,27 +1,34 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cinzel, Cormorant_Garamond, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
+
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tracksandchampagne.com"),
+  metadataBase: new URL("https://weddingtracks.org"),
   title: {
-    default: "Tracks and Champagne | Wedding Venue in Chatsworth, GA",
-    template: "%s | Tracks and Champagne",
+    default: "Wedding Tracks | Elegant Wedding Venue",
+    template: "%s | Wedding Tracks",
   },
   description:
-    "Tracks and Champagne offers gazebo ceremonies, house-stay wedding packages, and trail experiences in North Georgia.",
+    "A romantic wedding venue for intimate celebrations, weekend stays, and unforgettable destination-style moments.",
   keywords: [
     "Chatsworth wedding venue",
     "North Georgia wedding venue",
@@ -30,17 +37,22 @@ export const metadata: Metadata = {
     "wedding venue with house rental",
   ],
   openGraph: {
-    title: "Tracks and Champagne",
+    title: "Wedding Tracks",
     description:
-      "A unique affordable wedding venue in Chatsworth, GA with gazebo ceremonies, house stays, and scenic trails.",
-    url: "https://tracksandchampagne.com",
-    siteName: "Tracks and Champagne",
+      "Celebrate in North Georgia with elegant ceremony spaces, curated weekend experiences, and refined rustic charm.",
+    url: "https://weddingtracks.org",
+    siteName: "Wedding Tracks",
     locale: "en_US",
     type: "website",
   },
   robots: {
     index: true,
     follow: true,
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+    apple: ["/icon.svg"],
   },
 };
 
@@ -52,9 +64,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${geistMono.variable} ${cinzel.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900">
+      <body className="romantic-bg min-h-full flex flex-col text-zinc-900">
         <SiteHeader />
         {children}
         <SiteFooter />

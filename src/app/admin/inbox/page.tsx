@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { venuePackages } from "@/lib/packages";
+import { getVenuePackages } from "@/lib/packages";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +10,7 @@ import { createOwnerInvoice, sendOwnerReply } from "./actions";
 export default async function OwnerInboxPage() {
   const prisma = getPrismaClient();
   const user = await getSessionUser();
+  const venuePackages = await getVenuePackages();
 
   if (!user) {
     redirect("/auth/sign-in?next=/admin/inbox");
@@ -18,7 +19,6 @@ export default async function OwnerInboxPage() {
   if (user.role !== "OWNER") {
     redirect("/account");
   }
-
 
   const threads = await prisma.messageThread.findMany({
     orderBy: { updatedAt: "desc" },
@@ -63,8 +63,8 @@ export default async function OwnerInboxPage() {
   }
 
   return (
-    <main className="px-6 py-14 sm:px-10">
-      <div className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-7 shadow-sm">
+    <main className="px-4 py-10 sm:px-8 sm:py-14 lg:px-10">
+      <div className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-5 shadow-sm sm:p-7">
         <h1 className="text-2xl font-bold tracking-tight">Owner Inbox</h1>
         <p className="mt-2 text-sm text-zinc-600">
           View all guest conversations and reply from here.
@@ -82,13 +82,13 @@ export default async function OwnerInboxPage() {
             name="guestEmail"
             type="email"
             placeholder="Guest email"
-            className="rounded border border-zinc-300 px-3 py-2 text-sm"
+            className="rounded border border-zinc-300 px-3 py-2.5 text-sm"
           />
           <input
             required
             name="description"
             placeholder="Invoice description"
-            className="rounded border border-zinc-300 px-3 py-2 text-sm"
+            className="rounded border border-zinc-300 px-3 py-2.5 text-sm"
           />
           <div className="grid gap-3 sm:grid-cols-3">
             <input
@@ -98,17 +98,17 @@ export default async function OwnerInboxPage() {
               min="1"
               step="0.01"
               placeholder="Amount ($)"
-              className="rounded border border-zinc-300 px-3 py-2 text-sm"
+              className="rounded border border-zinc-300 px-3 py-2.5 text-sm"
             />
             <input
               required
               name="dueDate"
               type="date"
-              className="rounded border border-zinc-300 px-3 py-2 text-sm"
+              className="rounded border border-zinc-300 px-3 py-2.5 text-sm"
             />
             <select
               name="packageTier"
-              className="rounded border border-zinc-300 px-3 py-2 text-sm"
+              className="rounded border border-zinc-300 px-3 py-2.5 text-sm"
               defaultValue=""
             >
               <option value="">No package link</option>
@@ -119,7 +119,10 @@ export default async function OwnerInboxPage() {
               ))}
             </select>
           </div>
-          <button type="submit" className="w-fit rounded bg-zinc-900 px-3 py-2 text-sm text-white">
+          <button
+            type="submit"
+            className="w-full rounded bg-zinc-900 px-3 py-2.5 text-sm text-white sm:w-fit sm:py-2"
+          >
             Create invoice
           </button>
         </form>
@@ -136,7 +139,7 @@ export default async function OwnerInboxPage() {
                 ) ? (
                   <p className="mt-1 text-xs font-medium text-zinc-900">Unread in this thread</p>
                 ) : null}
-                <p className="text-sm text-zinc-600">
+                <p className="break-all text-sm text-zinc-600">
                   Guest: {thread.guest.name || "Guest"} ({thread.guest.email})
                 </p>
                 <div className="mt-3 space-y-2">
@@ -154,11 +157,11 @@ export default async function OwnerInboxPage() {
                     name="body"
                     rows={2}
                     placeholder="Reply to guest..."
-                    className="rounded border border-zinc-300 px-3 py-2 text-sm"
+                    className="rounded border border-zinc-300 px-3 py-2.5 text-sm"
                   />
                   <button
                     type="submit"
-                    className="w-fit rounded bg-zinc-900 px-3 py-1 text-sm text-white"
+                    className="w-full rounded bg-zinc-900 px-3 py-2 text-sm text-white sm:w-fit sm:py-1"
                   >
                     Send reply
                   </button>

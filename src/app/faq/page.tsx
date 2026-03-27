@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "FAQ | Tracks and Champagne",
+  title: "FAQ | Wedding Tracks",
   description:
-    "Frequently asked questions about bookings, guest capacity, amenities, and policies at Tracks and Champagne.",
+    "Frequently asked questions about bookings, guest capacity, amenities, and policies at Wedding Tracks.",
 };
 
 const faqs = [
@@ -36,12 +36,21 @@ const faqs = [
 export default function FaqPage() {
   return (
     <main className="px-6 py-14 sm:px-10">
-      <div className="mx-auto w-full max-w-4xl space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight">Frequently Asked Questions</h1>
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-4">
+        <section className="soft-panel rounded-3xl p-8 sm:p-10">
+          <p className="eyebrow">Planning questions</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
+            Frequently asked questions
+          </h1>
+          <p className="mt-4 max-w-3xl leading-8 text-zinc-700">
+            Everything couples ask most often before booking Wedding Tracks, from
+            guest counts and lodging to logistics and timelines.
+          </p>
+        </section>
         {faqs.map((item) => (
-          <article key={item.q} className="rounded-xl bg-white p-5 shadow-sm">
-            <h2 className="font-semibold">{item.q}</h2>
-            <p className="mt-2 text-zinc-700">{item.a}</p>
+          <article key={item.q} className="soft-panel rounded-2xl p-5">
+            <h2 className="text-lg font-semibold tracking-tight">{item.q}</h2>
+            <p className="mt-2 leading-7 text-zinc-700">{item.a}</p>
           </article>
         ))}
       </div>
