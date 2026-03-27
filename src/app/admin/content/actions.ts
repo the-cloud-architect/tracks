@@ -104,3 +104,44 @@ export async function removePointOfInterest(formData: FormData) {
   revalidatePath("/things-to-do");
   revalidatePath("/admin/content");
 }
+
+export async function updatePointOfInterest(formData: FormData) {
+  const prisma = getPrismaClient();
+  const user = await getSessionUser();
+  if (!user || user.role !== "OWNER") {
+    throw new Error("Owner access required.");
+  }
+
+  const id = String(formData.get("id") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const category = String(formData.get("category") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const latitude = Number(String(formData.get("latitude") ?? "").trim());
+  const longitude = Number(String(formData.get("longitude") ?? "").trim());
+  const externalUrl = String(formData.get("externalUrl") ?? "").trim();
+  const isActive = String(formData.get("isActive") ?? "") === "on";
+
+  if (!id || !name || !category || !externalUrl) {
+    throw new Error("ID, name, category, and URL are required.");
+  }
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    throw new Error("Latitude and longitude must be valid numbers.");
+  }
+  new URL(externalUrl);
+
+  await prisma.pointOfInterest.update({
+    where: { id },
+    data: {
+      name,
+      category,
+      description: description || null,
+      latitude,
+      longitude,
+      externalUrl,
+      isActive,
+    },
+  });
+
+  revalidatePath("/things-to-do");
+  revalidatePath("/admin/content");
+}

@@ -5,11 +5,15 @@ export const dynamic = "force-dynamic";
 
 import { getSessionUser } from "@/lib/auth/session";
 import { getVenuePackages } from "@/lib/packages";
-import { getPrismaClient } from "@/lib/prisma";
-import { addPointOfInterest, removePointOfInterest, updatePackagePricing } from "./actions";
+import { getPointsOfInterestForAdmin } from "@/lib/points-of-interest";
+import {
+  addPointOfInterest,
+  removePointOfInterest,
+  updatePackagePricing,
+  updatePointOfInterest,
+} from "./actions";
 
 export default async function AdminContentPage() {
-  const prisma = getPrismaClient();
   const user = await getSessionUser();
 
   if (!user) {
@@ -21,11 +25,7 @@ export default async function AdminContentPage() {
 
   const [packages, pointsOfInterest] = await Promise.all([
     getVenuePackages(),
-    prisma.pointOfInterest
-      .findMany({
-        orderBy: [{ createdAt: "desc" }],
-      })
-      .catch(() => []),
+    getPointsOfInterestForAdmin(),
   ]);
 
   return (
@@ -164,22 +164,65 @@ export default async function AdminContentPage() {
                   </tr>
                 ) : (
                   pointsOfInterest.map((place) => (
-                    <tr key={place.id} className="border-t border-zinc-200">
-                      <td className="px-3 py-2 font-medium">{place.name}</td>
-                      <td className="px-3 py-2">{place.category}</td>
-                      <td className="px-3 py-2 text-zinc-600">
-                        {place.latitude.toFixed(4)}, {place.longitude.toFixed(4)}
-                      </td>
-                      <td className="px-3 py-2">{place.isActive ? "Active" : "Inactive"}</td>
-                      <td className="px-3 py-2">
-                        <form action={removePointOfInterest}>
+                    <tr key={place.id} className="border-t border-zinc-200 align-top">
+                      <td className="px-3 py-2" colSpan={5}>
+                        <form action={updatePointOfInterest} className="grid gap-2 md:grid-cols-[1.2fr_0.8fr_1fr_0.7fr_auto]">
                           <input type="hidden" name="id" value={place.id} />
-                          <button
-                            type="submit"
-                            className="rounded border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
-                          >
-                            Remove
-                          </button>
+                          <div className="grid gap-1">
+                            <input
+                              name="name"
+                              defaultValue={place.name}
+                              className="rounded border border-zinc-300 px-2.5 py-1.5 text-sm"
+                            />
+                            <input
+                              name="description"
+                              defaultValue={place.description ?? ""}
+                              className="rounded border border-zinc-300 px-2.5 py-1.5 text-xs"
+                            />
+                          </div>
+                          <input
+                            name="category"
+                            defaultValue={place.category}
+                            className="rounded border border-zinc-300 px-2.5 py-1.5 text-sm"
+                          />
+                          <div className="grid grid-cols-2 gap-1">
+                            <input
+                              name="latitude"
+                              defaultValue={place.latitude}
+                              className="rounded border border-zinc-300 px-2.5 py-1.5 text-xs"
+                            />
+                            <input
+                              name="longitude"
+                              defaultValue={place.longitude}
+                              className="rounded border border-zinc-300 px-2.5 py-1.5 text-xs"
+                            />
+                          </div>
+                          <label className="flex items-center gap-2 rounded border border-zinc-200 bg-zinc-50 px-2 py-1.5 text-xs">
+                            <input type="checkbox" name="isActive" defaultChecked={place.isActive} />
+                            Active
+                          </label>
+                          <div className="flex flex-col gap-1">
+                            <input
+                              name="externalUrl"
+                              defaultValue={place.externalUrl}
+                              className="rounded border border-zinc-300 px-2.5 py-1.5 text-xs"
+                            />
+                            <div className="flex gap-1">
+                              <button
+                                type="submit"
+                                className="rounded bg-zinc-900 px-2.5 py-1 text-xs font-semibold text-white"
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="submit"
+                                formAction={removePointOfInterest}
+                                className="rounded border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-100"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
                         </form>
                       </td>
                     </tr>

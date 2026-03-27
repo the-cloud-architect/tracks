@@ -5,6 +5,7 @@ import { formatUsd, getVenuePackages } from "@/lib/packages";
 const packageImageByKey: Record<string, string> = {
   GAZEBO_ONLY: "/images/packages/package-1.jpg",
   GAZEBO_HOUSE_3_DAY: "/images/packages/package-2.jpg",
+  GAZEBO_HOUSE_ATV_3_DAY: "/images/packages/package-4.jpg",
   GAZEBO_HOUSE_6_DAY: "/images/packages/package-3.jpg",
   GAZEBO_HOUSE_ATV: "/images/packages/package-4.jpg",
 };
@@ -19,15 +20,20 @@ const packageHighlights: Record<string, string[]> = {
     "House access supports bridal prep, family time, and overnight comfort",
     "Balanced for couples wanting depth without overextending timelines",
   ],
+  GAZEBO_HOUSE_ATV_3_DAY: [
+    "Adds trail-based adventure to a focused 3-day wedding weekend",
+    "Ideal for couples who want refined celebration with curated outdoor energy",
+    "Creates memorable guest activities without extending your full stay",
+  ],
   GAZEBO_HOUSE_6_DAY: [
     "Extended destination format for multi-day hosting and memory making",
     "Ideal for guests traveling in and for events beyond ceremony day",
     "A slower, more luxurious cadence with room for meaningful moments",
   ],
   GAZEBO_HOUSE_ATV: [
-    "Adds trail-based adventure for a truly signature weekend experience",
-    "Perfect for couples blending refined celebration with outdoor personality",
-    "Creates distinct welcome-day and recovery-day activity options",
+    "Combines extended stay hosting with signature ATV adventure moments",
+    "Designed for destination couples wanting both luxury pacing and active experiences",
+    "Provides room for welcome events, ceremony flow, and post-wedding recovery activities",
   ],
 };
 

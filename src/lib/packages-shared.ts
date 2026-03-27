@@ -1,6 +1,7 @@
 export type PackageTier =
   | "GAZEBO_ONLY"
   | "GAZEBO_HOUSE_3_DAY"
+  | "GAZEBO_HOUSE_ATV_3_DAY"
   | "GAZEBO_HOUSE_6_DAY"
   | "GAZEBO_HOUSE_ATV";
 
@@ -31,6 +32,14 @@ export const DEFAULT_VENUE_PACKAGES: VenuePackage[] = [
     summary: "Ceremony package plus full house access for wedding weekend stays.",
   },
   {
+    key: "GAZEBO_HOUSE_ATV_3_DAY",
+    name: "Gazebo + House + ATV Experience (3 Day)",
+    priceCents: 720000,
+    depositCents: 175000,
+    duration: "3 days / 2 nights",
+    summary: "Adds guided ATV trail access and game-site activity routes.",
+  },
+  {
     key: "GAZEBO_HOUSE_6_DAY",
     name: "Gazebo + Depot House (6 Day)",
     priceCents: 640000,
@@ -40,11 +49,12 @@ export const DEFAULT_VENUE_PACKAGES: VenuePackage[] = [
   },
   {
     key: "GAZEBO_HOUSE_ATV",
-    name: "Gazebo + House + ATV Experience",
-    priceCents: 720000,
-    depositCents: 175000,
-    duration: "3 days / 2 nights",
-    summary: "Adds guided ATV trail access and game-site activity routes.",
+    name: "Gazebo + House + ATV Experience (6 Day)",
+    priceCents: 920000,
+    depositCents: 220000,
+    duration: "6 days / 5 nights",
+    summary:
+      "Extended ATV-inclusive destination package for couples wanting both adventure and a longer hosted celebration.",
   },
 ];
 

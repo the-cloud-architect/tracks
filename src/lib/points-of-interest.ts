@@ -48,9 +48,28 @@ export const DEFAULT_POINTS_OF_INTEREST: PointOfInterestView[] = [
     externalUrl: "https://www.google.com/maps/search/?api=1&query=Cartecay+River+Ellijay",
   },
 ];
+async function ensureDefaultPointsOfInterest() {
+  const prisma = getPrismaClient();
+  await prisma.pointOfInterest
+    .createMany({
+      data: DEFAULT_POINTS_OF_INTEREST.map((point) => ({
+        id: point.id,
+        name: point.name,
+        category: point.category,
+        description: point.description,
+        latitude: point.latitude,
+        longitude: point.longitude,
+        externalUrl: point.externalUrl,
+        isActive: true,
+      })),
+      skipDuplicates: true,
+    })
+    .catch(() => {});
+}
 
 export async function getPointsOfInterest(): Promise<PointOfInterestView[]> {
   const prisma = getPrismaClient();
+  await ensureDefaultPointsOfInterest();
   const rows = await prisma.pointOfInterest
     .findMany({
       where: { isActive: true },
@@ -75,4 +94,14 @@ export async function getPointsOfInterest(): Promise<PointOfInterestView[]> {
     ...row,
     description: row.description ?? "",
   }));
+}
+
+export async function getPointsOfInterestForAdmin() {
+  const prisma = getPrismaClient();
+  await ensureDefaultPointsOfInterest();
+  return prisma.pointOfInterest
+    .findMany({
+      orderBy: [{ category: "asc" }, { name: "asc" }],
+    })
+    .catch(() => []);
 }
