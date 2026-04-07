@@ -4,6 +4,7 @@ import { ellijayActivities } from "@/lib/ellijay";
 import { getSessionUser } from "@/lib/auth/session";
 import { getPrismaClient } from "@/lib/prisma";
 import { tryGetR2ObjectUrl } from "@/lib/r2";
+import { StickyMobileNav } from "./sticky-mobile-nav";
 const venueSchema = {
   "@context": "https://schema.org",
   "@type": "EventVenue",
@@ -21,30 +22,43 @@ const venueSchema = {
 export default async function Home() {
   const prisma = getPrismaClient();
   const user = await getSessionUser();
-  const heroVideoAsset = await prisma.mediaAsset
-    .findFirst({
-      where: {
-        status: "ACTIVE",
-        type: "VIDEO",
-        sourceUrl: "HERO_VIDEO",
-      },
-      orderBy: { updatedAt: "desc" },
+  // Fetch desktop and mobile hero videos separately
+  const [desktopVideoAsset, mobileVideoAsset, legacyVideoAsset] = await Promise.all([
+    prisma.mediaAsset.findFirst({
+      where: { status: "ACTIVE", type: "VIDEO", sourceUrl: "HERO_VIDEO_DESKTOP" },
       select: { objectKey: true },
-    })
-    .catch(() => null);
+    }).catch(() => null),
+    prisma.mediaAsset.findFirst({
+      where: { status: "ACTIVE", type: "VIDEO", sourceUrl: "HERO_VIDEO_MOBILE" },
+      select: { objectKey: true },
+    }).catch(() => null),
+    prisma.mediaAsset.findFirst({
+      where: { status: "ACTIVE", type: "VIDEO", sourceUrl: "HERO_VIDEO" },
+      select: { objectKey: true },
+    }).catch(() => null),
+  ]);
 
-  const heroVideoUrl =
-    (heroVideoAsset?.objectKey
-      ? tryGetR2ObjectUrl(heroVideoAsset.objectKey)
-      : null) ?? "/videos/wedding-hero.mp4";
+  // Desktop video: use desktop, fallback to legacy, fallback to default
+  const desktopVideoKey = desktopVideoAsset?.objectKey ?? legacyVideoAsset?.objectKey;
+  const desktopVideoUrl = desktopVideoKey
+    ? tryGetR2ObjectUrl(desktopVideoKey)
+    : "/videos/wedding-hero.mp4";
+  const desktopPosterUrl = desktopVideoKey
+    ? tryGetR2ObjectUrl(`video-thumbnails/${desktopVideoKey.replace(/^videos\//, "").replace(/\.[^.]+$/, "")}.jpg`)
+    : "/images/hero-share.jpg";
 
-  // Generate poster image URL for faster initial render
-  const heroPosterUrl = heroVideoAsset?.objectKey
-    ? tryGetR2ObjectUrl(`video-thumbnails/${heroVideoAsset.objectKey.replace(/^videos\//, "").replace(/\.[^.]+$/, "")}.jpg`)
+  // Mobile video: use mobile-specific, fallback to desktop
+  const mobileVideoKey = mobileVideoAsset?.objectKey ?? desktopVideoKey;
+  const mobileVideoUrl = mobileVideoKey
+    ? tryGetR2ObjectUrl(mobileVideoKey)
+    : "/videos/wedding-hero.mp4";
+  const mobilePosterUrl = mobileVideoKey
+    ? tryGetR2ObjectUrl(`video-thumbnails/${mobileVideoKey.replace(/^videos\//, "").replace(/\.[^.]+$/, "")}.jpg`)
     : "/images/hero-share.jpg";
   const featuredActivities = ellijayActivities.slice(0, 4);
   return (
     <main className="text-zinc-900" data-home="true">
+      <StickyMobileNav user={user} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(venueSchema) }}
@@ -58,10 +72,10 @@ export default async function Home() {
             muted
             playsInline
             preload="metadata"
-            poster={heroPosterUrl ?? undefined}
+            poster={mobilePosterUrl ?? undefined}
             data-hero-video
             className="absolute inset-0 h-full w-full object-cover"
-            src={heroVideoUrl}
+            src={mobileVideoUrl ?? undefined}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -149,7 +163,7 @@ export default async function Home() {
               </ul>
             </nav>
             <div className="max-w-4xl space-y-3 pb-2 text-white max-[380px]:space-y-2">
-              <p className="eyebrow text-zinc-100">
+              <p className="eyebrow text-white">
                 Chatsworth, Georgia
                 <br />
                 25 minutes west of downtown Ellijay
@@ -190,10 +204,10 @@ export default async function Home() {
             muted
             playsInline
             preload="metadata"
-            poster={heroPosterUrl ?? undefined}
+            poster={desktopPosterUrl ?? undefined}
             data-hero-video
             className="absolute inset-0 h-full w-full object-cover"
-            src={heroVideoUrl}
+            src={desktopVideoUrl ?? undefined}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />

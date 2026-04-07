@@ -33,7 +33,10 @@ export default async function AdminMediaPage() {
       orderBy: { createdAt: "desc" },
     })
     .catch(() => []);
-  const heroVideo = assets.find((asset) => asset.type === "VIDEO" && asset.sourceUrl === "HERO_VIDEO");
+  const heroVideoDesktop = assets.find((asset) => asset.type === "VIDEO" && asset.sourceUrl === "HERO_VIDEO_DESKTOP");
+  const heroVideoMobile = assets.find((asset) => asset.type === "VIDEO" && asset.sourceUrl === "HERO_VIDEO_MOBILE");
+  // Fallback to legacy HERO_VIDEO if no desktop video set
+  const legacyHeroVideo = assets.find((asset) => asset.type === "VIDEO" && asset.sourceUrl === "HERO_VIDEO");
 
   return (
     <main className="px-6 py-14 sm:px-10">
@@ -58,10 +61,20 @@ export default async function AdminMediaPage() {
           <p className="mt-1 text-sm text-zinc-600">
             Add wedding photography and highlight clips for the public gallery.
           </p>
-          <p className="mt-2 text-sm text-zinc-700">
-            Current hero video:{" "}
-            <span className="font-medium">{heroVideo ? heroVideo.title : "Using default site hero video"}</span>
-          </p>
+          <div className="mt-2 space-y-1 text-sm text-zinc-700">
+            <p>
+              Desktop hero:{" "}
+              <span className="font-medium">
+                {heroVideoDesktop?.title ?? legacyHeroVideo?.title ?? "Using default"}
+              </span>
+            </p>
+            <p>
+              Mobile hero:{" "}
+              <span className="font-medium">
+                {heroVideoMobile?.title ?? "Using desktop video"}
+              </span>
+            </p>
+          </div>
           <AdminMediaUploadForm />
         </section>
 
@@ -118,15 +131,38 @@ export default async function AdminMediaPage() {
                       {asset.type} · {formatSize(asset.sizeBytes)}
                     </p>
                     {asset.type === "VIDEO" ? (
-                      <form action={setHeroVideoAsset}>
-                        <input type="hidden" name="mediaId" value={asset.id} />
-                        <button
-                          type="submit"
-                          className="rounded border border-zinc-300 bg-zinc-50 px-3 py-1 text-sm text-zinc-700 hover:bg-zinc-100"
-                        >
-                          {asset.sourceUrl === "HERO_VIDEO" ? "Selected for hero" : "Set as hero video"}
-                        </button>
-                      </form>
+                      <div className="flex flex-wrap gap-2">
+                        <form action={setHeroVideoAsset}>
+                          <input type="hidden" name="mediaId" value={asset.id} />
+                          <input type="hidden" name="target" value="desktop" />
+                          <button
+                            type="submit"
+                            className={`rounded border px-3 py-1 text-sm ${
+                              asset.sourceUrl === "HERO_VIDEO_DESKTOP" || (asset.sourceUrl === "HERO_VIDEO" && !heroVideoDesktop)
+                                ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                                : "border-zinc-300 bg-zinc-50 text-zinc-700 hover:bg-zinc-100"
+                            }`}
+                          >
+                            {asset.sourceUrl === "HERO_VIDEO_DESKTOP" || (asset.sourceUrl === "HERO_VIDEO" && !heroVideoDesktop)
+                              ? "✓ Desktop"
+                              : "Desktop"}
+                          </button>
+                        </form>
+                        <form action={setHeroVideoAsset}>
+                          <input type="hidden" name="mediaId" value={asset.id} />
+                          <input type="hidden" name="target" value="mobile" />
+                          <button
+                            type="submit"
+                            className={`rounded border px-3 py-1 text-sm ${
+                              asset.sourceUrl === "HERO_VIDEO_MOBILE"
+                                ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                                : "border-zinc-300 bg-zinc-50 text-zinc-700 hover:bg-zinc-100"
+                            }`}
+                          >
+                            {asset.sourceUrl === "HERO_VIDEO_MOBILE" ? "✓ Mobile" : "Mobile"}
+                          </button>
+                        </form>
+                      </div>
                     ) : null}
                     <form action={deleteMediaAsset}>
                       <input type="hidden" name="mediaId" value={asset.id} />

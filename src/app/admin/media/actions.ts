@@ -50,6 +50,7 @@ export async function setHeroVideoAsset(formData: FormData) {
   }
 
   const mediaId = String(formData.get("mediaId") ?? "").trim();
+  const target = String(formData.get("target") ?? "desktop").trim();
   if (!mediaId) {
     return;
   }
@@ -63,14 +64,16 @@ export async function setHeroVideoAsset(formData: FormData) {
     return;
   }
 
+  const sourceUrlValue = target === "mobile" ? "HERO_VIDEO_MOBILE" : "HERO_VIDEO_DESKTOP";
+
   await prisma.$transaction([
     prisma.mediaAsset.updateMany({
-      where: { type: "VIDEO", sourceUrl: "HERO_VIDEO" },
+      where: { type: "VIDEO", sourceUrl: sourceUrlValue },
       data: { sourceUrl: null },
     }),
     prisma.mediaAsset.update({
       where: { id: asset.id },
-      data: { sourceUrl: "HERO_VIDEO" },
+      data: { sourceUrl: sourceUrlValue },
     }),
   ]);
 

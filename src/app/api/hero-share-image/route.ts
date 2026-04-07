@@ -10,15 +10,25 @@ export async function GET(request: NextRequest) {
 
   try {
     const prisma = getPrismaClient();
-    const heroVideo = await prisma.mediaAsset.findFirst({
+    // Check for desktop hero first, then legacy HERO_VIDEO
+    let heroVideo = await prisma.mediaAsset.findFirst({
       where: {
         status: "ACTIVE",
         type: "VIDEO",
-        sourceUrl: "HERO_VIDEO",
+        sourceUrl: "HERO_VIDEO_DESKTOP",
       },
-      orderBy: { updatedAt: "desc" },
       select: { objectKey: true },
     });
+    if (!heroVideo) {
+      heroVideo = await prisma.mediaAsset.findFirst({
+        where: {
+          status: "ACTIVE",
+          type: "VIDEO",
+          sourceUrl: "HERO_VIDEO",
+        },
+        select: { objectKey: true },
+      });
+    }
 
     if (!heroVideo?.objectKey) {
       return NextResponse.redirect(fallbackUrl, 307);
