@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ellijayActivities } from "@/lib/ellijay";
+import { getSessionUser } from "@/lib/auth/session";
 import { getPrismaClient } from "@/lib/prisma";
 import { tryGetR2ObjectUrl } from "@/lib/r2";
 const venueSchema = {
@@ -19,6 +20,7 @@ const venueSchema = {
 };
 export default async function Home() {
   const prisma = getPrismaClient();
+  const user = await getSessionUser();
   const heroVideoAsset = await prisma.mediaAsset
     .findFirst({
       where: {
@@ -102,6 +104,38 @@ export default async function Home() {
                   Contact
                 </Link>
               </li>
+              {user ? (
+                <>
+                  <li>
+                    <Link href="/account" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                      Account
+                    </Link>
+                  </li>
+                  {user.role === "OWNER" ? (
+                    <li>
+                      <Link href="/admin" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                        Admin dashboard
+                      </Link>
+                    </li>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link href="/auth/sign-in" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                      Sign in
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/auth/register"
+                      className="block rounded bg-zinc-900 px-2 py-1.5 text-white hover:opacity-90"
+                    >
+                      Create account
+                    </Link>
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
 
