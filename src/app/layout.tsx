@@ -22,7 +22,7 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://weddingtracks.org"),
+  metadataBase: new URL("https://www.weddingtracks.org"),
   title: {
     default: "Wedding Tracks | Elegant Wedding Venue",
     template: "%s | Wedding Tracks",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/api/hero-share-image",
+        url: "/api/hero-share-image?v=2",
         width: 1200,
         height: 630,
         alt: "Wedding Tracks hero video preview",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "Wedding Tracks",
     description:
       "Celebrate in North Georgia with elegant ceremony spaces, curated weekend experiences, and refined rustic charm.",
-    images: ["/api/hero-share-image"],
+    images: ["/api/hero-share-image?v=2"],
   },
   robots: {
     index: true,
