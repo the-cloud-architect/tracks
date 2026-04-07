@@ -28,7 +28,7 @@ export function StickyMobileNav({ user }: { user: User }) {
 
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 border-b border-zinc-200/80 bg-white/95 px-3 py-2 backdrop-blur-md sm:hidden">
-      <ul className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-800">
+      <ul className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-medium uppercase tracking-wider text-zinc-800">
         <li>
           <Link href="/" className="hover:text-zinc-600">
             Home
@@ -40,8 +40,18 @@ export function StickyMobileNav({ user }: { user: User }) {
           </Link>
         </li>
         <li>
+          <Link href="/things-to-do" className="hover:text-zinc-600">
+            Travel
+          </Link>
+        </li>
+        <li>
           <Link href="/packages" className="hover:text-zinc-600">
             Collections
+          </Link>
+        </li>
+        <li>
+          <Link href="/about" className="hover:text-zinc-600">
+            About
           </Link>
         </li>
         <li>
@@ -52,6 +62,11 @@ export function StickyMobileNav({ user }: { user: User }) {
         <li>
           <Link href="/reserve" className="hover:text-zinc-600">
             Reserve
+          </Link>
+        </li>
+        <li>
+          <Link href="/faq" className="hover:text-zinc-600">
+            FAQs
           </Link>
         </li>
         <li>
@@ -75,11 +90,18 @@ export function StickyMobileNav({ user }: { user: User }) {
             ) : null}
           </>
         ) : (
-          <li>
-            <Link href="/auth/sign-in" className="hover:text-zinc-600">
-              Sign in
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link href="/auth/sign-in" className="hover:text-zinc-600">
+                Sign in
+              </Link>
+            </li>
+            <li>
+              <Link href="/auth/register" className="hover:text-zinc-600">
+                Create account
+              </Link>
+            </li>
+          </>
         )}
       </ul>
     </nav>
