@@ -5,7 +5,8 @@ export const dynamic = "force-dynamic";
 import { getSessionUser } from "@/lib/auth/session";
 import { getPrismaClient } from "@/lib/prisma";
 import { tryGetR2ObjectUrl } from "@/lib/r2";
-import { deleteMediaAsset, setHeroVideoAsset, uploadMediaAsset } from "./actions";
+import { deleteMediaAsset, setHeroVideoAsset } from "./actions";
+import { AdminMediaUploadForm } from "./upload-form";
 
 function formatSize(sizeBytes: number): string {
   if (sizeBytes < 1024 * 1024) {
@@ -61,38 +62,7 @@ export default async function AdminMediaPage() {
             Current hero video:{" "}
             <span className="font-medium">{heroVideo ? heroVideo.title : "Using default site hero video"}</span>
           </p>
-          <form
-            action={uploadMediaAsset}
-            method="post"
-            encType="multipart/form-data"
-            className="mt-4 grid gap-3"
-          >
-            <input
-              name="title"
-              required
-              placeholder="Title"
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-            />
-            <textarea
-              name="description"
-              rows={2}
-              placeholder="Short description (optional)"
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-            />
-            <input
-              name="file"
-              required
-              type="file"
-              accept="image/*,video/*"
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm"
-            />
-            <button
-              type="submit"
-              className="w-fit rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
-            >
-              Upload asset
-            </button>
-          </form>
+          <AdminMediaUploadForm />
         </section>
 
         <section className="space-y-3">

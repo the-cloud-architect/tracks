@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { PutObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 type R2Config = {
   accountId: string;
@@ -96,17 +97,45 @@ function sanitizeName(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
+export function createMediaObjectKey(input: {
+  fileName: string;
+  folder: "photos" | "videos";
+}): string {
+  const ext = input.fileName.includes(".")
+    ? input.fileName.slice(input.fileName.lastIndexOf(".")).toLowerCase()
+    : "";
+  const safeBase = sanitizeName(input.fileName.replace(/\.[^.]+$/, "")) || "asset";
+  return `${input.folder}/${Date.now()}-${randomUUID()}-${safeBase}${ext}`;
+}
+
+export async function createPresignedR2UploadUrl(input: {
+  objectKey: string;
+  contentType: string;
+  expiresInSeconds?: number;
+}): Promise<string> {
+  const client = getR2Client();
+  const config = getR2Config();
+  const command = new PutObjectCommand({
+    Bucket: config.bucket,
+    Key: input.objectKey,
+    ContentType: input.contentType || "application/octet-stream",
+    CacheControl: "public, max-age=31536000, immutable",
+  });
+  return getSignedUrl(client, command, {
+    expiresIn: input.expiresInSeconds ?? 300,
+  });
+}
+
 export async function uploadFileToR2(input: {
   file: File;
   folder: "photos" | "videos";
 }): Promise<{ objectKey: string; url: string }> {
   const client = getR2Client();
   const config = getR2Config();
-  const ext = input.file.name.includes(".")
-    ? input.file.name.slice(input.file.name.lastIndexOf(".")).toLowerCase()
-    : "";
-  const safeBase = sanitizeName(input.file.name.replace(/\.[^.]+$/, "")) || "asset";
-  const objectKey = `${input.folder}/${Date.now()}-${randomUUID()}-${safeBase}${ext}`;
+  const objectKey = createMediaObjectKey({
+    fileName: input.file.name,
+    folder: input.folder,
+  });
 
   const bytes = await input.file.arrayBuffer();
   await client.send(
