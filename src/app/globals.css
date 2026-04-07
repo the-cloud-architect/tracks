@@ -19,7 +19,8 @@ header nav a {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-montserrat);
-  --font-display: var(--font-playfair);
+  --font-display: var(--font-dancing);
+  --font-heading: var(--font-swanky);
 }
 
 body {
@@ -37,12 +38,10 @@ video:not([data-hero-video]) {
   height: auto;
 }
 
-h1,
 h2,
-h3,
-h4 {
-  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
-  letter-spacing: 0.02em;
+h3 {
+  font-family: var(--font-swanky), "Swanky and Moo Moo", cursive;
+  letter-spacing: 0.01em;
 }
 
 .romantic-bg {
@@ -96,7 +95,7 @@ h4 {
 
 .hero-dropcap {
   float: left;
-  font-family: var(--font-playfair), "Playfair Display", Georgia, serif;
+  font-family: var(--font-dancing), "Dancing Script", cursive;
   font-size: 1.9em;
   line-height: 0.95;
   padding-right: 0.2em;

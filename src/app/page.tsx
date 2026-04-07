@@ -168,7 +168,7 @@ export default async function Home() {
                 <br />
                 25 minutes west of downtown Ellijay
               </p>
-              <h1 className="text-4xl font-semibold leading-[0.9] tracking-[0.07em] uppercase max-[380px]:text-3xl">
+              <h1 className="font-[family-name:var(--font-dancing)] text-5xl font-normal leading-[1.1] max-[380px]:text-4xl">
                 Wedding Tracks
               </h1>
               <div className="hero-divider" aria-hidden="true">
@@ -302,7 +302,7 @@ export default async function Home() {
   <br />
   25 minutes west of downtown Ellijay
 </p>
-            <h1 className="text-5xl font-semibold leading-[0.9] tracking-[0.07em] uppercase max-[380px]:text-4xl sm:text-7xl lg:text-8xl">
+            <h1 className="font-[family-name:var(--font-dancing)] text-6xl font-normal leading-[1.1] sm:text-8xl lg:text-9xl">
               Wedding Tracks
             </h1>
             <div className="hero-divider" aria-hidden="true">
