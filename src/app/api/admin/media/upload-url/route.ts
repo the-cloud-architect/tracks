@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
     const fileName = String(body.fileName ?? "").trim();
     const fileType = String(body.fileType ?? "").trim().toLowerCase();
     const fileSize = Number(body.fileSize ?? 0);
+    const requestedObjectKey = String(body.requestedObjectKey ?? "").trim();
 
     if (!fileName || !fileType || !Number.isFinite(fileSize)) {
       return NextResponse.json({ error: "Missing required file metadata." }, { status: 400 });
@@ -31,10 +32,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only image and video files are supported." }, { status: 400 });
     }
 
-    const objectKey = createMediaObjectKey({
+    let objectKey = createMediaObjectKey({
       fileName,
       folder: isPhoto ? "photos" : "videos",
     });
+    if (requestedObjectKey) {
+      const normalizedRequestedObjectKey = requestedObjectKey.replace(/^\/+/, "");
+      const allowedPrefix = isPhoto ? "video-thumbnails/" : "videos/";
+      if (!normalizedRequestedObjectKey.startsWith(allowedPrefix)) {
+        return NextResponse.json({ error: "Invalid object key for file type." }, { status: 400 });
+      }
+      objectKey = normalizedRequestedObjectKey;
+    }
     const uploadUrl = await createPresignedR2UploadUrl({
       objectKey,
       contentType: fileType || "application/octet-stream",

@@ -7,13 +7,14 @@ const MAX_FILE_SIZE_BYTES = 512 * 1024 * 1024;
 
 function uploadToSignedUrl(input: {
   uploadUrl: string;
-  file: File;
+  file: Blob;
+  contentType?: string;
   onProgress: (progressPercent: number) => void;
 }): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", input.uploadUrl);
-    xhr.setRequestHeader("Content-Type", input.file.type || "application/octet-stream");
+    xhr.setRequestHeader("Content-Type", input.contentType || input.file.type || "application/octet-stream");
 
     xhr.upload.onprogress = (event) => {
       if (!event.lengthComputable || event.total <= 0) {
@@ -37,6 +38,59 @@ function uploadToSignedUrl(input: {
 
     xhr.send(input.file);
   });
+}
+
+function getVideoThumbnailObjectKey(videoObjectKey: string): string {
+  const normalizedVideoKey = videoObjectKey.trim().replace(/^\/+/, "");
+  const withoutPrefix = normalizedVideoKey.startsWith("videos/")
+    ? normalizedVideoKey.slice("videos/".length)
+    : normalizedVideoKey;
+  const withoutExtension = withoutPrefix.replace(/\.[^.]+$/, "");
+  return `video-thumbnails/${withoutExtension}.jpg`;
+}
+
+async function createVideoThumbnailBlob(file: File): Promise<Blob | null> {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const video = document.createElement("video");
+    video.muted = true;
+    video.preload = "metadata";
+    video.playsInline = true;
+    video.src = objectUrl;
+    await new Promise<void>((resolve, reject) => {
+      video.onloadeddata = () => resolve();
+      video.onerror = () => reject(new Error("Could not read uploaded video for thumbnail generation."));
+    });
+
+    const targetTime = Math.min(2, Math.max(0, (video.duration || 0) * 0.25));
+    if (Number.isFinite(targetTime) && targetTime > 0) {
+      video.currentTime = targetTime;
+      await new Promise<void>((resolve) => {
+        video.onseeked = () => resolve();
+        setTimeout(resolve, 600);
+      });
+    }
+
+    const width = video.videoWidth || 1200;
+    const height = video.videoHeight || 630;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return null;
+    }
+    context.drawImage(video, 0, 0, width, height);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((value) => resolve(value), "image/jpeg", 0.85);
+    });
+    return blob;
+  } catch {
+    return null;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 
 export function AdminMediaUploadForm() {
@@ -101,6 +155,32 @@ export function AdminMediaUploadForm() {
         file,
         onProgress: setProgressPercent,
       });
+
+      if (file.type.startsWith("video/")) {
+        const thumbnailBlob = await createVideoThumbnailBlob(file);
+        if (thumbnailBlob) {
+          const thumbnailObjectKey = getVideoThumbnailObjectKey(String(signedPayload.objectKey));
+          const thumbnailUploadUrlResponse = await fetch("/api/admin/media/upload-url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fileName: `${file.name}.jpg`,
+              fileType: "image/jpeg",
+              fileSize: thumbnailBlob.size,
+              requestedObjectKey: thumbnailObjectKey,
+            }),
+          });
+          const thumbnailUploadPayload = await thumbnailUploadUrlResponse.json().catch(() => null);
+          if (thumbnailUploadUrlResponse.ok && thumbnailUploadPayload?.uploadUrl) {
+            await uploadToSignedUrl({
+              uploadUrl: String(thumbnailUploadPayload.uploadUrl),
+              file: thumbnailBlob,
+              contentType: "image/jpeg",
+              onProgress: () => {},
+            });
+          }
+        }
+      }
 
       const completeResponse = await fetch("/api/admin/media/complete", {
         method: "POST",

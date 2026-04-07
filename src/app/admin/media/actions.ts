@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { getSessionUser } from "@/lib/auth/session";
 import { getPrismaClient } from "@/lib/prisma";
-import { deleteFileFromR2 } from "@/lib/r2";
+import { deleteFileFromR2, getVideoThumbnailObjectKey } from "@/lib/r2";
 
 export async function deleteMediaAsset(formData: FormData) {
   const prisma = getPrismaClient();
@@ -29,6 +29,9 @@ export async function deleteMediaAsset(formData: FormData) {
   }
 
   await deleteFileFromR2(asset.objectKey).catch(() => {});
+  if (asset.objectKey.startsWith("videos/")) {
+    await deleteFileFromR2(getVideoThumbnailObjectKey(asset.objectKey)).catch(() => {});
+  }
   await prisma.mediaAsset.delete({
     where: { id: asset.id },
   });

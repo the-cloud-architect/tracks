@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { PutObjectCommand, DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, DeleteObjectCommand, HeadObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 type R2Config = {
@@ -108,6 +108,15 @@ export function createMediaObjectKey(input: {
   return `${input.folder}/${Date.now()}-${randomUUID()}-${safeBase}${ext}`;
 }
 
+export function getVideoThumbnailObjectKey(videoObjectKey: string): string {
+  const normalizedVideoKey = videoObjectKey.trim().replace(/^\/+/, "");
+  const withoutPrefix = normalizedVideoKey.startsWith("videos/")
+    ? normalizedVideoKey.slice("videos/".length)
+    : normalizedVideoKey;
+  const withoutExtension = withoutPrefix.replace(/\.[^.]+$/, "");
+  return `video-thumbnails/${withoutExtension}.jpg`;
+}
+
 export async function createPresignedR2UploadUrl(input: {
   objectKey: string;
   contentType: string;
@@ -164,4 +173,20 @@ export async function deleteFileFromR2(objectKey: string): Promise<void> {
       Key: objectKey,
     }),
   );
+}
+
+export async function r2ObjectExists(objectKey: string): Promise<boolean> {
+  try {
+    const client = getR2Client();
+    const config = getR2Config();
+    await client.send(
+      new HeadObjectCommand({
+        Bucket: config.bucket,
+        Key: objectKey,
+      }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
 }

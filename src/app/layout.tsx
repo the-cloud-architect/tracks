@@ -46,10 +46,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/images/hero-share.jpg",
+        url: "/api/hero-share-image",
         width: 1200,
         height: 630,
-        alt: "Wedding Tracks venue hero preview",
+        alt: "Wedding Tracks hero video preview",
       },
     ],
   },
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "Wedding Tracks",
     description:
       "Celebrate in North Georgia with elegant ceremony spaces, curated weekend experiences, and refined rustic charm.",
-    images: ["/images/hero-share.jpg"],
+    images: ["/api/hero-share-image"],
   },
   robots: {
     index: true,
