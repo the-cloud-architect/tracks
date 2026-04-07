@@ -44,7 +44,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(venueSchema) }}
       />
-      <section className="relative min-h-screen w-full overflow-hidden">
+      <section className="relative min-h-[74svh] w-full overflow-hidden sm:min-h-screen">
         <video
           autoPlay
           loop
@@ -56,64 +56,64 @@ export default async function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-        <div className="relative flex min-h-screen flex-col justify-between p-4 max-[380px]:p-3 sm:p-10">
-          <nav className="w-full max-w-[14.5rem] rounded-2xl bg-transparent p-1 max-[380px]:max-w-[12.75rem] sm:w-fit">
-            <ul className="space-y-0.5 text-xs font-semibold text-white max-[380px]:text-[11px] sm:text-sm">
+        <div className="relative flex min-h-[74svh] flex-col justify-between p-3 max-[380px]:p-2.5 sm:min-h-screen sm:p-10">
+          <nav className="w-full max-w-[10.5rem] rounded-2xl bg-transparent p-0.5 max-[380px]:max-w-[9.25rem] sm:w-fit sm:max-w-[14.5rem] sm:p-1">
+            <ul className="space-y-0 text-[11px] font-semibold leading-tight text-white max-[380px]:text-[10px] sm:space-y-0.5 sm:text-sm">
               <li>
-                <Link href="/" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/book-a-tour" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/book-a-tour" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   Schedule
                 </Link>
               </li>
               <li>
-                <Link href="/things-to-do" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/things-to-do" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   Travel
                 </Link>
               </li>
               <li>
-                <Link href="/packages" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/packages" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   Collections
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/about" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/gallery" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   Gallery
                 </Link>
               </li>
               <li>
-                <Link href="/reserve" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/reserve" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   Reserve
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/faq" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                <Link href="/contact" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                   Contact
                 </Link>
               </li>
               {user ? (
                 <>
                   <li>
-                    <Link href="/account" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                    <Link href="/account" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                       Account
                     </Link>
                   </li>
                   {user.role === "OWNER" ? (
                     <li>
-                      <Link href="/admin" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                      <Link href="/admin" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                         Admin dashboard
                       </Link>
                     </li>
@@ -122,14 +122,14 @@ export default async function Home() {
               ) : (
                 <>
                   <li>
-                    <Link href="/auth/sign-in" className="block rounded px-2 py-1.5 hover:bg-white/15">
+                    <Link href="/auth/sign-in" className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15">
                       Sign in
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="/auth/register"
-                      className="block rounded px-2 py-1.5 hover:bg-white/15"
+                      className="block rounded px-2 py-1 sm:py-1.5 hover:bg-white/15"
                     >
                       Create account
                     </Link>
