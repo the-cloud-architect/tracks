@@ -140,7 +140,11 @@ export default async function Home() {
           </nav>
 
           <div className="max-w-4xl space-y-4 pb-4 text-white max-[380px]:space-y-3 sm:space-y-6 sm:pb-8">
-            <p className="eyebrow text-zinc-100">Chatsworth, Georgia · 25 minutes west of downtown Ellijay</p>
+            <p className="eyebrow text-zinc-100">
+  Chatsworth, Georgia
+  <br />
+  25 minutes west of downtown Ellijay
+</p>
             <h1 className="text-5xl font-semibold leading-[0.9] tracking-[0.07em] uppercase max-[380px]:text-4xl sm:text-7xl lg:text-8xl">
               Wedding Tracks
             </h1>
