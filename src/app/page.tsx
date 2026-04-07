@@ -37,6 +37,11 @@ export default async function Home() {
     (heroVideoAsset?.objectKey
       ? tryGetR2ObjectUrl(heroVideoAsset.objectKey)
       : null) ?? "/videos/wedding-hero.mp4";
+
+  // Generate poster image URL for faster initial render
+  const heroPosterUrl = heroVideoAsset?.objectKey
+    ? tryGetR2ObjectUrl(`video-thumbnails/${heroVideoAsset.objectKey.replace(/^videos\//, "").replace(/\.[^.]+$/, "")}.jpg`)
+    : "/images/hero-share.jpg";
   const featuredActivities = ellijayActivities.slice(0, 4);
   return (
     <main className="text-zinc-900" data-home="true">
@@ -44,19 +49,157 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(venueSchema) }}
       />
-      <section className="relative min-h-[74svh] w-full overflow-hidden sm:min-h-screen">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          className="absolute inset-0 h-full w-full object-cover"
-          src={heroVideoUrl}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-        <div className="relative flex min-h-[74svh] flex-col justify-between p-3 max-[380px]:p-2.5 sm:min-h-screen sm:p-10">
+      <section className="relative w-full overflow-hidden bg-black sm:min-h-screen">
+        {/* Mobile: square aspect ratio video with overlaid content */}
+        <div className="relative aspect-square w-full sm:hidden">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster={heroPosterUrl ?? undefined}
+            data-hero-video
+            className="absolute inset-0 h-full w-full object-cover"
+            src={heroVideoUrl}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          {/* Mobile overlay content */}
+          <div className="absolute inset-0 flex flex-col justify-between p-3 max-[380px]:p-2.5">
+            <nav className="w-full max-w-[10.5rem] rounded-2xl bg-transparent p-0.5 max-[380px]:max-w-[9.25rem]">
+              <ul className="space-y-0 text-[11px] font-semibold leading-tight text-white max-[380px]:text-[10px]">
+                <li>
+                  <Link href="/" className="block rounded px-2 py-1 hover:bg-white/15">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/book-a-tour" className="block rounded px-2 py-1 hover:bg-white/15">
+                    Schedule
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/things-to-do" className="block rounded px-2 py-1 hover:bg-white/15">
+                    Travel
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/packages" className="block rounded px-2 py-1 hover:bg-white/15">
+                    Collections
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="block rounded px-2 py-1 hover:bg-white/15">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/gallery" className="block rounded px-2 py-1 hover:bg-white/15">
+                    Gallery
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/reserve" className="block rounded px-2 py-1 hover:bg-white/15">
+                    Reserve
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="block rounded px-2 py-1 hover:bg-white/15">
+                    FAQs
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="block rounded px-2 py-1 hover:bg-white/15">
+                    Contact
+                  </Link>
+                </li>
+                {user ? (
+                  <>
+                    <li>
+                      <Link href="/account" className="block rounded px-2 py-1 hover:bg-white/15">
+                        Account
+                      </Link>
+                    </li>
+                    {user.role === "OWNER" ? (
+                      <li>
+                        <Link href="/admin" className="block rounded px-2 py-1 hover:bg-white/15">
+                          Admin dashboard
+                        </Link>
+                      </li>
+                    ) : null}
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <Link href="/auth/sign-in" className="block rounded px-2 py-1 hover:bg-white/15">
+                        Sign in
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/auth/register"
+                        className="block rounded px-2 py-1 hover:bg-white/15"
+                      >
+                        Create account
+                      </Link>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </nav>
+            <div className="max-w-4xl space-y-3 pb-2 text-white max-[380px]:space-y-2">
+              <p className="eyebrow text-zinc-100">
+                Chatsworth, Georgia
+                <br />
+                25 minutes west of downtown Ellijay
+              </p>
+              <h1 className="text-4xl font-semibold leading-[0.9] tracking-[0.07em] uppercase max-[380px]:text-3xl">
+                Wedding Tracks
+              </h1>
+              <div className="hero-divider" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+              <p className="max-w-3xl text-xs tracking-[0.18em] text-zinc-100/90 uppercase">
+                Wedding Estate · Destination-Style Weekend Celebrations
+              </p>
+              <div className="flex flex-col gap-2 pt-1">
+                <Link
+                  href="/book-a-tour"
+                  className="w-full rounded-full border border-white/70 bg-gradient-to-r from-white via-rose-50 to-amber-50 px-5 py-2.5 text-center text-xs font-semibold uppercase tracking-[0.1em] text-zinc-900 shadow-[0_8px_30px_rgba(0,0,0,0.28)] transition hover:-translate-y-0.5 hover:brightness-105 max-[380px]:px-4"
+                >
+                  Schedule a private tour
+                </Link>
+                <Link
+                  href="/packages"
+                  className="w-full rounded-full border border-white/75 bg-black/30 px-5 py-2.5 text-center text-xs font-semibold uppercase tracking-[0.1em] text-white shadow-[0_8px_30px_rgba(0,0,0,0.28)] transition hover:-translate-y-0.5 hover:bg-black/45 max-[380px]:px-4"
+                >
+                  Explore collections
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Desktop: full screen video */}
+        <div className="absolute inset-0 hidden sm:block">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster={heroPosterUrl ?? undefined}
+            data-hero-video
+            className="absolute inset-0 h-full w-full object-cover"
+            src={heroVideoUrl}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        </div>
+        {/* Desktop content */}
+        <div className="relative hidden min-h-screen flex-col justify-between p-10 sm:flex">
           <nav className="w-full max-w-[10.5rem] rounded-2xl bg-transparent p-0.5 max-[380px]:max-w-[9.25rem] sm:w-fit sm:max-w-[14.5rem] sm:p-1">
             <ul className="space-y-0 text-[11px] font-semibold leading-tight text-white max-[380px]:text-[10px] sm:space-y-0.5 sm:text-sm">
               <li>

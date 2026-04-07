@@ -34,7 +34,7 @@ body {
 }
 
 img,
-video {
+video:not([data-hero-video]) {
   max-width: 100%;
   height: auto;
 }
