@@ -57,63 +57,63 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
         <div className="relative flex min-h-screen flex-col justify-between p-4 max-[380px]:p-3 sm:p-10">
-          <nav className="w-full max-w-[14.5rem] rounded-2xl bg-white/90 p-3 shadow-xl backdrop-blur max-[380px]:max-w-[12.75rem] max-[380px]:p-2.5 sm:w-fit sm:p-5">
-            <ul className="space-y-1 text-xs font-semibold text-zinc-900 max-[380px]:text-[11px] sm:text-sm">
+          <nav className="w-full max-w-[14.5rem] rounded-2xl bg-transparent p-1 max-[380px]:max-w-[12.75rem] sm:w-fit">
+            <ul className="space-y-0.5 text-xs font-semibold text-white max-[380px]:text-[11px] sm:text-sm">
               <li>
-                <Link href="/" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/book-a-tour" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/book-a-tour" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   Schedule
                 </Link>
               </li>
               <li>
-                <Link href="/things-to-do" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/things-to-do" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   Travel
                 </Link>
               </li>
               <li>
-                <Link href="/packages" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/packages" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   Collections
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/about" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/gallery" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   Gallery
                 </Link>
               </li>
               <li>
-                <Link href="/reserve" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/reserve" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   Reserve
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/faq" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   FAQs
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                <Link href="/contact" className="block rounded px-2 py-1.5 hover:bg-white/15">
                   Contact
                 </Link>
               </li>
               {user ? (
                 <>
                   <li>
-                    <Link href="/account" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                    <Link href="/account" className="block rounded px-2 py-1.5 hover:bg-white/15">
                       Account
                     </Link>
                   </li>
                   {user.role === "OWNER" ? (
                     <li>
-                      <Link href="/admin" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                      <Link href="/admin" className="block rounded px-2 py-1.5 hover:bg-white/15">
                         Admin dashboard
                       </Link>
                     </li>
@@ -122,14 +122,14 @@ export default async function Home() {
               ) : (
                 <>
                   <li>
-                    <Link href="/auth/sign-in" className="block rounded px-2 py-1.5 hover:bg-zinc-100">
+                    <Link href="/auth/sign-in" className="block rounded px-2 py-1.5 hover:bg-white/15">
                       Sign in
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="/auth/register"
-                      className="block rounded bg-zinc-900 px-2 py-1.5 text-white hover:opacity-90"
+                      className="block rounded px-2 py-1.5 hover:bg-white/15"
                     >
                       Create account
                     </Link>
@@ -140,7 +140,7 @@ export default async function Home() {
           </nav>
 
           <div className="max-w-4xl space-y-4 pb-4 text-white max-[380px]:space-y-3 sm:space-y-6 sm:pb-8">
-            <p className="eyebrow text-zinc-100">North Georgia · 25 minutes west of Ellijay</p>
+            <p className="eyebrow text-zinc-100">Chatsworth, Georgia · 25 minutes west of downtown Ellijay</p>
             <h1 className="text-5xl font-semibold leading-[0.9] tracking-[0.07em] uppercase max-[380px]:text-4xl sm:text-7xl lg:text-8xl">
               Wedding Tracks
             </h1>
