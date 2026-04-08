@@ -4,7 +4,7 @@ import { ContactForm } from "./contact-form";
 export const metadata: Metadata = {
   title: "Contact | Wedding Tracks",
   description:
-    "Contact Wedding Tracks in Chatsworth, GA for wedding package questions, tours, and availability.",
+    "Contact Wedding Tracks for availability, tours, package questions, and wedding weekend planning in North Georgia.",
 };
 
 export default function ContactPage() {
@@ -14,27 +14,32 @@ export default function ContactPage() {
         <section className="soft-panel rounded-3xl p-8 sm:p-10">
           <p className="eyebrow">Start the conversation</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
-            Let&apos;s plan a wedding weekend that feels unmistakably yours.
+            Let&apos;s start planning your wedding weekend.
           </h1>
           <p className="mt-4 max-w-3xl leading-8 text-zinc-700">
-            Wedding Tracks is based in North Georgia, approximately 25
-            minutes west of Ellijay. Reach out for current availability, package
-            guidance, custom weekend ideas, and private tour scheduling.
+            Wedding Tracks is a private North Georgia wedding venue located about
+            25 minutes west of downtown Ellijay. Reach out for availability,
+            package guidance, private tour scheduling, or help choosing the right
+            wedding day or weekend stay experience.
           </p>
         </section>
+
         <div className="soft-panel rounded-2xl p-6 text-zinc-700">
           <p className="text-sm uppercase tracking-[0.16em] text-zinc-500">
             Contact details
           </p>
+
           <div className="mt-4 space-y-2 leading-7">
             <p>Email: hello@tracksandchampagne.com</p>
-            <p>Service area: North Georgia (25 minutes west of Ellijay)</p>
+            <p>Location: North Georgia, 25 minutes west of downtown Ellijay</p>
           </div>
+
           <p className="mt-4 text-sm text-zinc-600">
-            For fastest response, include your ideal date range, estimated guest
-            count, and whether you are interested in a single-day or weekend
-            package.
+            For the fastest response, include your preferred date range, estimated
+            guest count, and whether you are looking for a ceremony-only package
+            or a full wedding weekend stay.
           </p>
+
           <ContactForm />
         </div>
       </div>
