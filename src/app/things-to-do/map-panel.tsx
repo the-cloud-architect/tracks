@@ -111,7 +111,7 @@ export function ThingsToDoMapPanel({ places }: MapPanelProps) {
         <div>
           <p className="eyebrow">Interactive area map</p>
           <h2 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
-            Explore places around Ellijay
+            Explore Chatsworth & Ellijay
           </h2>
         </div>
       </div>

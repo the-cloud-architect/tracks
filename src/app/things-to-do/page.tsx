@@ -22,9 +22,8 @@ export default async function ThingsToDoPage() {
             Things to do around Ellijay, Georgia
           </h1>
           <p className="mt-4 max-w-3xl leading-8 text-zinc-700">
-            Give your guests a full mountain-weekend experience with curated
-            local recommendations for food, scenery, and adventure before and
-            after your celebration.
+            
+            Local recommendations for food, scenery, and adventure during your stay
           </p>
         </section>
 
