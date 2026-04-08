@@ -64,6 +64,8 @@ export default async function Home() {
     : "/images/hero-share.jpg";
 
   const featuredActivities = ellijayActivities.slice(0, 4);
+  const scriptHeadingClass =
+    "font-[family-name:var(--font-dancing)] font-normal leading-[1.15] tracking-normal";
 
   return (
     <main className="text-zinc-900" data-home="true">
@@ -401,7 +403,9 @@ export default async function Home() {
         <section className="grid gap-5 lg:grid-cols-3">
           <article className="soft-panel rounded-2xl p-6">
             <p className="eyebrow">Ceremony</p>
-            <h2 className="mt-2 text-2xl font-semibold">Intimate weddings with destination appeal</h2>
+            <h2 className={`mt-2 text-2xl ${scriptHeadingClass}`}>
+              Intimate weddings with destination appeal
+            </h2>
             <p className="mt-3 text-sm leading-7 text-zinc-700">
               Exchange vows in a private North Georgia setting with manicured grounds, pond views,
               and cinematic backdrops designed for meaningful gatherings, beautiful photography,
@@ -411,7 +415,9 @@ export default async function Home() {
 
           <article className="soft-panel rounded-2xl p-6">
             <p className="eyebrow">Weekend stay</p>
-            <h2 className="mt-2 text-2xl font-semibold">Celebrate here. Stay here. Honeymoon here.</h2>
+            <h2 className={`mt-2 text-2xl ${scriptHeadingClass}`}>
+              Celebrate here. Stay here. Honeymoon here.
+            </h2>
             <p className="mt-3 text-sm leading-7 text-zinc-700">
               Turn your wedding day into a full destination-style weekend with overnight
               accommodations, private trails, and a secluded estate that invites couples to linger
@@ -421,7 +427,9 @@ export default async function Home() {
 
           <article className="soft-panel rounded-2xl p-6">
             <p className="eyebrow">Planning support</p>
-            <h2 className="mt-2 text-2xl font-semibold">Straightforward packages, personal guidance</h2>
+            <h2 className={`mt-2 text-2xl ${scriptHeadingClass}`}>
+              Straightforward packages, personal guidance
+            </h2>
             <p className="mt-3 text-sm leading-7 text-zinc-700">
               Clear pricing, simple reservation steps, and direct owner support make planning feel
               easier, so you can focus on the celebration instead of getting buried in venue
@@ -434,7 +442,7 @@ export default async function Home() {
           <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
             <div>
               <p className="eyebrow">Why couples choose us</p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight">
+              <h2 className={`mt-2 text-3xl ${scriptHeadingClass}`}>
                 A private North Georgia wedding venue with room to breathe.
               </h2>
               <p className="mt-4 leading-8 text-zinc-700">
@@ -463,7 +471,7 @@ export default async function Home() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="eyebrow">Things to do nearby</p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight">
+              <h2 className={`mt-2 text-3xl ${scriptHeadingClass}`}>
                 Build a wedding weekend your guests will actually enjoy.
               </h2>
               <p className="mt-3 max-w-3xl leading-8 text-zinc-700">
@@ -488,7 +496,7 @@ export default async function Home() {
                 className="rounded-2xl border border-zinc-200 bg-white/80 p-5"
               >
                 <p className="eyebrow">{activity.category}</p>
-                <h3 className="mt-2 text-xl font-semibold tracking-tight">{activity.name}</h3>
+                <h3 className={`mt-2 text-xl ${scriptHeadingClass}`}>{activity.name}</h3>
                 <p className="mt-2 text-sm leading-7 text-zinc-700">{activity.description}</p>
               </article>
             ))}
