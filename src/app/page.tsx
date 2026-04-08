@@ -1,10 +1,17 @@
 import Link from "next/link";
+import { Dancing_Script } from "next/font/google";
 
 import { ellijayActivities } from "@/lib/ellijay";
 import { getSessionUser } from "@/lib/auth/session";
 import { getPrismaClient } from "@/lib/prisma";
 import { tryGetR2ObjectUrl } from "@/lib/r2";
 import { StickyMobileNav } from "./sticky-mobile-nav";
+
+const dancingScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 const venueSchema = {
   "@context": "https://schema.org",
@@ -64,8 +71,7 @@ export default async function Home() {
     : "/images/hero-share.jpg";
 
   const featuredActivities = ellijayActivities.slice(0, 4);
-  const scriptHeadingClass =
-    "font-[family-name:var(--font-dancing)] font-normal leading-[1.15] tracking-normal";
+  const scriptHeadingClass = `${dancingScript.className} font-normal leading-[1.15] tracking-normal`;
 
   return (
     <main className="text-zinc-900" data-home="true">
@@ -186,7 +192,7 @@ export default async function Home() {
                 25 minutes west of downtown Ellijay
               </p>
 
-              <h1 className="font-[family-name:var(--font-dancing)] text-5xl font-normal leading-[1.1] max-[380px]:text-4xl">
+              <h1 className={`${dancingScript.className} text-5xl font-normal leading-[1.1] max-[380px]:text-4xl`}>
                 Wedding Tracks
               </h1>
 
@@ -353,7 +359,7 @@ export default async function Home() {
               25 minutes west of downtown Ellijay
             </p>
 
-            <h1 className="font-[family-name:var(--font-dancing)] text-6xl font-normal leading-[1.1] sm:text-8xl lg:text-9xl">
+            <h1 className={`${dancingScript.className} text-6xl font-normal leading-[1.1] sm:text-8xl lg:text-9xl`}>
               Wedding Tracks
             </h1>
 
