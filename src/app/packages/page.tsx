@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { formatUsd, getVenuePackages } from "@/lib/packages";
+
 const packageImageByKey: Record<string, string> = {
   GAZEBO_ONLY: "/images/packages/package-1.jpg",
   GAZEBO_HOUSE_3_DAY: "/images/packages/package-2.jpg",
@@ -9,59 +10,62 @@ const packageImageByKey: Record<string, string> = {
   GAZEBO_HOUSE_6_DAY: "/images/packages/package-3.jpg",
   GAZEBO_HOUSE_ATV: "/images/packages/package-4.jpg",
 };
+
 const packageHighlights: Record<string, string[]> = {
   GAZEBO_ONLY: [
-    "Ideal for couples who want a focused ceremony-day experience",
-    "Designed around intimate guest flow and elevated photography moments",
-    "Simple, elegant structure with clear planning milestones",
+    "Ideal for couples who want a ceremony-centered wedding in a distinctive North Georgia setting",
+    "Keeps the experience intimate, polished, and easy to manage",
+    "A strong fit for couples who want beautiful scenery without committing to a full weekend stay",
   ],
   GAZEBO_HOUSE_3_DAY: [
-    "A complete weekend rhythm: arrival, celebration, and relaxed departure",
-    "House access supports bridal prep, family time, and overnight comfort",
-    "Balanced for couples wanting depth without overextending timelines",
+    "Creates a true wedding weekend with time to arrive, celebrate, and unwind",
+    "Includes house access for getting ready, hosting close family, and staying on property",
+    "Balances destination-style atmosphere with a shorter, more manageable timeline",
   ],
   GAZEBO_HOUSE_ATV_3_DAY: [
-    "Adds trail-based adventure to a focused 3-day wedding weekend",
-    "Ideal for couples who want refined celebration with curated outdoor energy",
-    "Creates memorable guest activities without extending your full stay",
+    "Adds a signature trail-and-adventure element to a focused wedding weekend",
+    "Ideal for couples who want the property’s outdoor character to be part of the experience",
+    "Makes the stay more memorable without requiring a longer booking window",
   ],
   GAZEBO_HOUSE_6_DAY: [
-    "Extended destination format for multi-day hosting and memory making",
-    "Ideal for guests traveling in and for events beyond ceremony day",
-    "A slower, more luxurious cadence with room for meaningful moments",
+    "Best for destination weddings with travel, downtime, and multiple hosted moments",
+    "Gives couples room for welcome gatherings, the wedding day, and post-celebration rest",
+    "Offers a slower pace that lets you actually enjoy the property instead of rushing through it",
   ],
   GAZEBO_HOUSE_ATV: [
-    "Combines extended stay hosting with signature ATV adventure moments",
-    "Designed for destination couples wanting both luxury pacing and active experiences",
-    "Provides room for welcome events, ceremony flow, and post-wedding recovery activities",
+    "The fullest destination-style experience, combining extended stay with signature trail access",
+    "Designed for couples who want a wedding weekend that feels private, active, and one of a kind",
+    "Provides extra room for hosted events, portraits, exploration, and post-wedding downtime",
   ],
 };
 
 export const metadata: Metadata = {
   title: "Packages | Wedding Tracks",
   description:
-    "Explore signature Wedding Tracks collections designed for intimate ceremonies, weekend hosting, and elevated destination-style celebrations.",
+    "Explore Wedding Tracks packages for intimate North Georgia weddings, weekend stays, and destination-style celebrations with private property access and one-of-a-kind character.",
 };
 
 export default async function PackagesPage() {
   const venuePackages = await getVenuePackages();
+
   return (
     <main className="px-6 py-14 sm:px-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <section className="soft-panel rounded-3xl p-8 sm:p-10">
-          <p className="eyebrow">Collections and investment</p>
+          <p className="eyebrow">Packages and pricing</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
-            Signature collections crafted for elegant weekends.
+            Wedding packages built for intimate celebrations and full weekend stays.
           </h1>
           <p className="mt-4 max-w-3xl leading-8 text-zinc-700">
-            Wedding Tracks collections are built to be both elevated and
-            practical: clear investment, thoughtful pacing, and curated space for
-            intimate celebration. Every collection includes ceremony gazebo
-            access, parking for approximately 25 vehicles, outside speaker system
-            access, and three on-site external bathrooms. Curfew begins at 11:00
-            PM EST.
+            Wedding Tracks packages are designed for couples who want more than a basic venue
+            rental. Whether you are planning a ceremony-focused day or a destination-style wedding
+            weekend, each package is structured to keep the experience clear, beautiful, and easy
+            to plan. Every package includes gazebo ceremony access, parking for approximately 25
+            vehicles, use of the outside speaker system, and three on-site exterior bathrooms.
+            Curfew begins at 11:00 PM EST.
           </p>
         </section>
+
         <section className="space-y-5">
           {venuePackages.map((pkg) => (
             <article key={pkg.key} className="soft-panel overflow-hidden rounded-3xl">
@@ -70,19 +74,21 @@ export default async function PackagesPage() {
                   <p className="eyebrow">{pkg.duration}</p>
                   <h2 className="mt-2 text-3xl font-semibold tracking-[0.04em]">{pkg.name}</h2>
                   <p className="mt-3 text-sm leading-7 text-zinc-700">{pkg.summary}</p>
+
                   <div className="mt-5 space-y-2 border-t border-zinc-200 pt-4 text-sm">
                     <p>
-                      Collection total:{" "}
+                      Package total:{" "}
                       <span className="font-semibold text-zinc-900">{formatUsd(pkg.priceCents)}</span>
                     </p>
                     <p>
-                      Date-retainer deposit:{" "}
+                      Date retainer deposit:{" "}
                       <span className="font-semibold text-zinc-900">
                         {formatUsd(pkg.depositCents)}
                       </span>
                     </p>
                   </div>
                 </div>
+
                 <div className="p-6">
                   <div className="mb-5 overflow-hidden rounded-2xl">
                     <img
@@ -91,21 +97,26 @@ export default async function PackagesPage() {
                       className="h-60 w-full object-cover"
                     />
                   </div>
-                  <p className="eyebrow">Why couples choose this</p>
+
+                  <p className="eyebrow">Why couples choose this package</p>
                   <ul className="mt-3 space-y-3 text-zinc-700">
                     {(packageHighlights[pkg.key] ?? []).map((point) => (
                       <li key={point} className="flex gap-3 leading-7">
-                        <span aria-hidden="true" className="mt-2 h-2 w-2 rounded-full bg-zinc-700" />
+                        <span
+                          aria-hidden="true"
+                          className="mt-2 h-2 w-2 rounded-full bg-zinc-700"
+                        />
                         <span>{point}</span>
                       </li>
                     ))}
                   </ul>
+
                   <div className="mt-6">
                     <Link
                       href={`/reserve?packageTier=${pkg.key}`}
                       className="inline-flex rounded-full border border-zinc-900 bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:opacity-90"
                     >
-                      Reserve
+                      Reserve this package
                     </Link>
                   </div>
                 </div>
@@ -113,23 +124,25 @@ export default async function PackagesPage() {
             </article>
           ))}
         </section>
+
         <div className="soft-panel rounded-2xl p-5 text-base leading-8 text-zinc-700 sm:text-lg">
-          Optional enhancements include catering support and wedding manager
-          services, allowing you to tailor hospitality and flow around your exact
-          guest experience vision.
+          Optional enhancements such as catering support and wedding management services can be
+          added to shape the weekend around your guest experience, event flow, and hospitality
+          priorities.
         </div>
+
         <div className="flex flex-wrap gap-3">
           <Link
             href="/reserve"
             className="rounded-full border border-zinc-900 bg-zinc-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:opacity-90"
           >
-            Reserve a Date
+            Reserve a date
           </Link>
           <Link
             href="/book-a-tour"
             className="rounded-full border border-zinc-300 bg-white/85 px-6 py-2.5 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-100"
           >
-            Tour the Property
+            Tour the property
           </Link>
         </div>
       </div>
