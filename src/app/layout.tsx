@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Dancing_Script, Swanky_and_Moo_Moo, Montserrat } from "next/font/google";
+import { Dancing_Script, Montserrat } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -8,12 +8,6 @@ const dancingScript = Dancing_Script({
   variable: "--font-dancing",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-});
-
-const swanky = Swanky_and_Moo_Moo({
-  variable: "--font-swanky",
-  subsets: ["latin"],
-  weight: "400",
 });
 
 const montserrat = Montserrat({
@@ -80,7 +74,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dancingScript.variable} ${swanky.variable} ${montserrat.variable} h-full antialiased`}
+      className={`${dancingScript.variable} ${montserrat.variable} h-full antialiased`}
     >
       <body className="romantic-bg min-h-full flex flex-col text-zinc-900">
         <SiteHeader />

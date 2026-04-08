@@ -20,7 +20,6 @@ header nav a {
   --color-foreground: var(--foreground);
   --font-sans: var(--font-montserrat);
   --font-display: var(--font-dancing);
-  --font-heading: var(--font-swanky);
 }
 
 body {
@@ -40,7 +39,7 @@ video:not([data-hero-video]) {
 
 h2,
 h3 {
-  font-family: var(--font-swanky), "Swanky and Moo Moo", cursive;
+  font-family: var(--font-dancing), "Dancing Script", cursive;
   letter-spacing: 0.01em;
 }
 
