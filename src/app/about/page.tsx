@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "About | Wedding Tracks",
@@ -11,7 +12,7 @@ export default function AboutPage() {
   return (
     <main className="px-6 py-14 sm:px-10">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <section className="soft-panel rounded-3xl p-8 sm:p-10">
+        <section data-reveal className="soft-panel rounded-3xl p-8 sm:p-10">
           <p className="eyebrow">Our story</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
             A North Georgia wedding retreat with character, privacy, and room to linger.
@@ -27,13 +28,16 @@ export default function AboutPage() {
           </p>
         </section>
 
-        <section className="soft-panel overflow-hidden rounded-3xl">
+        <section data-reveal className="soft-panel overflow-hidden rounded-3xl">
           <div className="grid gap-0 md:grid-cols-[1fr_1.1fr]">
-            <div className="aspect-[4/5] bg-zinc-100 md:aspect-auto">
-              <img
+            <div className="relative aspect-[4/5] bg-zinc-100 md:aspect-auto">
+              <Image
                 src="/images/owner/owner-feature.jpg"
                 alt="Wedding Tracks owner feature portrait"
-                className="h-full w-full object-cover"
+                fill
+                priority
+                sizes="(min-width: 768px) 40vw, 100vw"
+                className="object-cover"
               />
             </div>
             <div className="p-8 sm:p-10">
@@ -52,7 +56,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="grid gap-5 md:grid-cols-2">
+        <section data-reveal className="grid gap-5 md:grid-cols-2">
           <article className="soft-panel rounded-2xl p-6">
             <p className="eyebrow">The estate</p>
             <h2 className="mt-2 text-2xl font-semibold">A one-of-a-kind setting with railroad character</h2>
@@ -78,7 +82,7 @@ export default function AboutPage() {
           </article>
         </section>
 
-        <div className="soft-panel rounded-2xl p-6">
+        <div data-reveal className="soft-panel rounded-2xl p-6">
           <p className="text-sm uppercase tracking-[0.16em] text-zinc-500">
             A message from the team
           </p>

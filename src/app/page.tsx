@@ -1,17 +1,9 @@
 import Link from "next/link";
-import { Dancing_Script } from "next/font/google";
 
 import { ellijayActivities } from "@/lib/ellijay";
 import { getSessionUser } from "@/lib/auth/session";
-import { getPrismaClient } from "@/lib/prisma";
-import { tryGetR2ObjectUrl } from "@/lib/r2";
+import { getHomeHeroMedia } from "@/lib/media";
 import { StickyMobileNav } from "./sticky-mobile-nav";
-
-const dancingScript = Dancing_Script({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 const venueSchema = {
   "@context": "https://schema.org",
@@ -29,49 +21,11 @@ const venueSchema = {
 };
 
 export default async function Home() {
-  const prisma = getPrismaClient();
   const user = await getSessionUser();
-
-  // Fetch desktop and mobile hero videos separately
-  const [desktopVideoAsset, mobileVideoAsset, legacyVideoAsset] = await Promise.all([
-    prisma.mediaAsset.findFirst({
-      where: { status: "ACTIVE", type: "VIDEO", sourceUrl: "HERO_VIDEO_DESKTOP" },
-      select: { objectKey: true },
-    }).catch(() => null),
-    prisma.mediaAsset.findFirst({
-      where: { status: "ACTIVE", type: "VIDEO", sourceUrl: "HERO_VIDEO_MOBILE" },
-      select: { objectKey: true },
-    }).catch(() => null),
-    prisma.mediaAsset.findFirst({
-      where: { status: "ACTIVE", type: "VIDEO", sourceUrl: "HERO_VIDEO" },
-      select: { objectKey: true },
-    }).catch(() => null),
-  ]);
-
-  // Desktop video: use desktop, fallback to legacy, fallback to default
-  const desktopVideoKey = desktopVideoAsset?.objectKey ?? legacyVideoAsset?.objectKey;
-  const desktopVideoUrl = desktopVideoKey
-    ? tryGetR2ObjectUrl(desktopVideoKey)
-    : "/videos/wedding-hero.mp4";
-  const desktopPosterUrl = desktopVideoKey
-    ? tryGetR2ObjectUrl(
-        `video-thumbnails/${desktopVideoKey.replace(/^videos\//, "").replace(/\.[^.]+$/, "")}.jpg`,
-      )
-    : "/images/hero-share.jpg";
-
-  // Mobile video: use mobile-specific, fallback to desktop
-  const mobileVideoKey = mobileVideoAsset?.objectKey ?? desktopVideoKey;
-  const mobileVideoUrl = mobileVideoKey
-    ? tryGetR2ObjectUrl(mobileVideoKey)
-    : "/videos/wedding-hero.mp4";
-  const mobilePosterUrl = mobileVideoKey
-    ? tryGetR2ObjectUrl(
-        `video-thumbnails/${mobileVideoKey.replace(/^videos\//, "").replace(/\.[^.]+$/, "")}.jpg`,
-      )
-    : "/images/hero-share.jpg";
+  const { desktopVideoUrl, mobileVideoUrl, heroPosterUrl } = await getHomeHeroMedia();
 
   const featuredActivities = ellijayActivities.slice(0, 4);
-  const scriptHeadingClass = `${dancingScript.className} font-normal leading-[1.15] tracking-normal`;
+  const scriptHeadingClass = "font-[family-name:var(--font-dancing)] font-normal leading-[1.15] tracking-normal";
 
   return (
     <main className="text-zinc-900" data-home="true">
@@ -82,24 +36,29 @@ export default async function Home() {
       />
 
       <section className="relative w-full overflow-hidden bg-black sm:min-h-screen">
-        {/* Mobile: square aspect ratio video with overlaid content */}
-        <div className="relative aspect-square w-full sm:hidden">
+        <div className="relative aspect-square w-full sm:absolute sm:inset-0 sm:aspect-auto">
           <video
             autoPlay
             loop
             muted
             playsInline
             preload="metadata"
-            poster={mobilePosterUrl ?? undefined}
+            poster={heroPosterUrl}
             data-hero-video
             className="absolute inset-0 h-full w-full object-cover"
-            src={mobileVideoUrl ?? undefined}
-          />
+            aria-hidden="true"
+          >
+            <source media="(max-width: 639px)" src={mobileVideoUrl} type="video/mp4" />
+            <source media="(min-width: 640px)" src={desktopVideoUrl} type="video/mp4" />
+            <source src={desktopVideoUrl || mobileVideoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        </div>
 
-          {/* Mobile overlay content */}
-          <div className="absolute inset-0 flex flex-col justify-between p-3 max-[380px]:p-2.5">
+        <div className="absolute inset-0 flex flex-col justify-between p-3 max-[380px]:p-2.5 sm:hidden">
+          <div data-reveal className="contents">
             <nav className="w-full max-w-[10.5rem] rounded-2xl bg-transparent p-0.5 max-[380px]:max-w-[9.25rem]">
               <ul className="space-y-0 text-[11px] font-semibold leading-tight text-white max-[380px]:text-[10px]">
                 <li>
@@ -192,7 +151,7 @@ export default async function Home() {
                 25 minutes west of downtown Ellijay
               </p>
 
-              <h1 className={`${dancingScript.className} text-5xl font-normal leading-[1.1] max-[380px]:text-4xl`}>
+              <h1 className="font-[family-name:var(--font-dancing)] text-5xl font-normal leading-[1.1] max-[380px]:text-4xl">
                 Wedding Tracks
               </h1>
 
@@ -224,25 +183,8 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Desktop: full screen video */}
-        <div className="absolute inset-0 hidden sm:block">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            poster={desktopPosterUrl ?? undefined}
-            data-hero-video
-            className="absolute inset-0 h-full w-full object-cover"
-            src={desktopVideoUrl ?? undefined}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/15" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-        </div>
-
         {/* Desktop content */}
-        <div className="relative hidden min-h-screen flex-col justify-between p-10 sm:flex">
+        <div data-reveal className="relative hidden min-h-screen flex-col justify-between p-10 sm:flex">
           <nav className="w-full max-w-[10.5rem] rounded-2xl bg-transparent p-0.5 max-[380px]:max-w-[9.25rem] sm:w-fit sm:max-w-[14.5rem] sm:p-1">
             <ul className="space-y-0 text-[11px] font-semibold leading-tight text-white max-[380px]:text-[10px] sm:space-y-0.5 sm:text-sm">
               <li>
@@ -359,7 +301,7 @@ export default async function Home() {
               25 minutes west of downtown Ellijay
             </p>
 
-            <h1 className={`${dancingScript.className} text-6xl font-normal leading-[1.1] sm:text-8xl lg:text-9xl`}>
+            <h1 className="font-[family-name:var(--font-dancing)] text-6xl font-normal leading-[1.1] sm:text-8xl lg:text-9xl">
               Wedding Tracks
             </h1>
 
@@ -406,7 +348,7 @@ export default async function Home() {
       </section>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 sm:gap-8 sm:px-8 sm:py-14 lg:px-12">
-        <section className="grid gap-5 lg:grid-cols-3">
+        <section data-reveal className="grid gap-5 lg:grid-cols-3">
           <article className="soft-panel rounded-2xl p-6">
             <p className="eyebrow">Ceremony</p>
             <h2 className={`mt-2 text-2xl ${scriptHeadingClass}`}>
@@ -444,7 +386,7 @@ export default async function Home() {
           </article>
         </section>
 
-        <section className="soft-panel rounded-3xl p-8 sm:p-10">
+        <section data-reveal className="soft-panel rounded-3xl p-8 sm:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
             <div>
               <p className="eyebrow">Why couples choose us</p>
@@ -473,7 +415,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <section className="soft-panel rounded-3xl p-8 sm:p-10">
+        <section data-reveal className="soft-panel rounded-3xl p-8 sm:p-10">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="eyebrow">Things to do nearby</p>

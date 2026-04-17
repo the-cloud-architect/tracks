@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getSessionUser } from "@/lib/auth/session";
@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
 
     revalidatePath("/gallery");
     revalidatePath("/admin/media");
+    revalidateTag("gallery-media", "max");
+    revalidateTag("hero-media", "max");
 
     return NextResponse.json({ ok: true, id: asset.id });
   } catch {

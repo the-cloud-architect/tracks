@@ -32,6 +32,13 @@ export default function ReservePage() {
   const [error, setError] = useState("");
 
   const upcomingDates = useMemo(() => getNextDates(90), []);
+  const requestedPackageTier = useMemo(
+    () =>
+      typeof window === "undefined"
+        ? ""
+        : String(new URLSearchParams(window.location.search).get("packageTier") ?? "").trim(),
+    [],
+  );
   const selectedPackage = useMemo(
     () => packages.find((pkg) => pkg.key === packageTier) ?? packages[0],
     [packageTier, packages],
@@ -47,16 +54,18 @@ export default function ReservePage() {
       }
       const data = (await response.json()) as { packages?: VenuePackage[] };
       if (isMounted && data.packages && data.packages.length > 0) {
-        setPackages(data.packages);
-        const requestedPackageTier = String(
-          new URLSearchParams(window.location.search).get("packageTier") ?? "",
-        ).trim();
-        const preferred = data.packages.find((pkg) => pkg.key === requestedPackageTier);
-        if (preferred) {
-          setPackageTier(preferred.key);
-        } else if (!data.packages.find((pkg) => pkg.key === packageTier)) {
-          setPackageTier(data.packages[0].key);
-        }
+        const loadedPackages = data.packages;
+        setPackages(loadedPackages);
+        const preferred = loadedPackages.find((pkg) => pkg.key === requestedPackageTier);
+        setPackageTier((currentPackageTier) => {
+          if (preferred) {
+            return preferred.key;
+          }
+
+          return loadedPackages.find((pkg) => pkg.key === currentPackageTier)
+            ? currentPackageTier
+            : loadedPackages[0].key;
+        });
       }
     }
 
@@ -83,7 +92,7 @@ export default function ReservePage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [requestedPackageTier]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPrismaClient } from "@/lib/prisma";
+import Image from "next/image";
+
+import { getGalleryAssets } from "@/lib/media";
 import { tryGetR2ObjectUrl } from "@/lib/r2";
 
 export const metadata: Metadata = {
@@ -9,17 +11,11 @@ export const metadata: Metadata = {
     "Preview photo moments from Wedding Tracks, including ceremony scenes, estate details, and weekend atmosphere.",
 };
 export default async function GalleryPage() {
-  const prisma = getPrismaClient();
-  const assets = await prisma.mediaAsset
-    .findMany({
-      where: { status: "ACTIVE", type: "PHOTO" },
-      orderBy: { createdAt: "desc" },
-    })
-    .catch(() => []);
+  const assets = await getGalleryAssets();
   return (
     <main className="px-3 py-10 sm:px-5 lg:px-6">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <section className="soft-panel rounded-3xl p-8 sm:p-10">
+        <section data-reveal className="soft-panel rounded-3xl p-8 sm:p-10">
           <p className="eyebrow">Venue highlights</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
             A visual preview of the atmosphere your guests will remember.
@@ -35,7 +31,7 @@ export default async function GalleryPage() {
             imagery.
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+          <div data-reveal className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
             {assets.map((asset) => (
               <article
                 key={asset.id}
@@ -52,10 +48,12 @@ export default async function GalleryPage() {
                   }
                   return (
                     <div className="relative aspect-[4/5] bg-zinc-100">
-                      <img
+                      <Image
                         src={assetUrl}
                         alt={asset.title}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                        fill
+                        sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                        className="object-cover transition duration-500 group-hover:scale-[1.03]"
                       />
                       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-3 text-white">
                         <p className="text-base font-semibold tracking-[0.03em]">{asset.title}</p>

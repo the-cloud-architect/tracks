@@ -39,6 +39,7 @@ export function ThingsToDoMapPanel({ places }: MapPanelProps) {
 
   useEffect(() => {
     let cancelled = false;
+    const markers = markersRef.current;
 
     async function initializeMap() {
       if (!mapElementRef.current || mapRef.current) {
@@ -69,7 +70,7 @@ export function ThingsToDoMapPanel({ places }: MapPanelProps) {
           .addTo(map)
           .bindTooltip(place.name, { direction: "top" })
           .on("click", () => setSelectedId(place.id));
-        markersRef.current.set(place.id, marker);
+        markers.set(place.id, marker);
       });
 
       if (bounds.isValid()) {
@@ -83,7 +84,7 @@ export function ThingsToDoMapPanel({ places }: MapPanelProps) {
 
     return () => {
       cancelled = true;
-      markersRef.current.clear();
+      markers.clear();
       mapRef.current?.remove();
       mapRef.current = null;
     };

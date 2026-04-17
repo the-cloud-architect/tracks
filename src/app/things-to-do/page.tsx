@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 import { ellijayActivities } from "@/lib/ellijay";
 import { getPointsOfInterest } from "@/lib/points-of-interest";
@@ -16,7 +17,7 @@ export default async function ThingsToDoPage() {
   return (
     <main className="px-4 py-10 sm:px-8 lg:px-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <section className="soft-panel rounded-3xl p-8 sm:p-10">
+        <section data-reveal className="soft-panel rounded-3xl p-8 sm:p-10">
           <p className="eyebrow">Area guide</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
             Things to do around Ellijay, Georgia
@@ -29,14 +30,16 @@ export default async function ThingsToDoPage() {
 
         <ThingsToDoMapPanel places={pointsOfInterest} />
 
-        <section className="grid gap-4 md:grid-cols-2">
+        <section data-reveal className="grid gap-4 md:grid-cols-2">
           {ellijayActivities.map((activity) => (
             <article key={activity.name} className="soft-panel overflow-hidden rounded-2xl">
-              <div className="aspect-[16/10] bg-zinc-100">
-                <img
+              <div className="relative aspect-[16/10] bg-zinc-100">
+                <Image
                   src={activity.imagePath}
                   alt={activity.name}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="object-cover"
                 />
               </div>
               <div className="p-6">

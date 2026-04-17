@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { getSessionUser } from "@/lib/auth/session";
 import { getPrismaClient } from "@/lib/prisma";
@@ -39,6 +39,8 @@ export async function deleteMediaAsset(formData: FormData) {
   revalidatePath("/gallery");
   revalidatePath("/admin/media");
   revalidatePath("/");
+  revalidateTag("gallery-media", "max");
+  revalidateTag("hero-media", "max");
 }
 
 export async function setHeroVideoAsset(formData: FormData) {
@@ -79,4 +81,5 @@ export async function setHeroVideoAsset(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/media");
+  revalidateTag("hero-media", "max");
 }

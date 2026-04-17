@@ -1,19 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [nextPath, setNextPath] = useState("/account");
-  const router = useRouter();
+  const [nextPath] = useState(() => {
+    if (typeof window === "undefined") {
+      return "/account";
+    }
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setNextPath(params.get("next") || "/account");
-  }, []);
+    return new URLSearchParams(window.location.search).get("next") || "/account";
+  });
+  const router = useRouter();
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

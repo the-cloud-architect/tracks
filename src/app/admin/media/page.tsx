@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -91,7 +92,7 @@ export default async function AdminMediaPage() {
                   key={asset.id}
                   className="overflow-hidden rounded-xl border border-zinc-200 bg-white"
                 >
-                  <div className="aspect-video bg-zinc-100">
+                  <div className="relative aspect-video bg-zinc-100">
                     {(() => {
                       const assetUrl = tryGetR2ObjectUrl(asset.objectKey);
                       if (!assetUrl) {
@@ -105,10 +106,12 @@ export default async function AdminMediaPage() {
 
                       if (asset.type === "PHOTO") {
                         return (
-                          <img
+                          <Image
                             src={assetUrl}
                             alt={asset.title}
-                            className="h-full w-full object-cover"
+                            fill
+                            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                            className="object-cover"
                           />
                         );
                       }

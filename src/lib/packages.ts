@@ -1,4 +1,5 @@
 import type { PackageConfig } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 import { getPrismaClient } from "@/lib/prisma";
 import {
@@ -10,6 +11,22 @@ import {
 
 export { DEFAULT_VENUE_PACKAGES, formatUsd };
 export type { PackageTier, VenuePackage };
+
+const getCachedPackageConfigs = unstable_cache(
+  async (): Promise<Array<Pick<PackageConfig, "tier" | "priceCents" | "depositCents">>> => {
+    const prisma = getPrismaClient();
+    return prisma.packageConfig
+      .findMany({
+        select: { tier: true, priceCents: true, depositCents: true },
+      })
+      .catch(() => []);
+  },
+  ["venue-packages"],
+  {
+    revalidate: 3600,
+    tags: ["venue-packages"],
+  },
+);
 
 function applyPackageConfig(
   defaults: VenuePackage[],
@@ -30,12 +47,7 @@ function applyPackageConfig(
 }
 
 export async function getVenuePackages(): Promise<VenuePackage[]> {
-  const prisma = getPrismaClient();
-  const configs = await prisma.packageConfig
-    .findMany({
-      select: { tier: true, priceCents: true, depositCents: true },
-    })
-    .catch(() => []);
+  const configs = await getCachedPackageConfigs();
   if (configs.length === 0) {
     return DEFAULT_VENUE_PACKAGES;
   }

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { getSessionUser } from "@/lib/auth/session";
 import { DEFAULT_VENUE_PACKAGES, type PackageTier } from "@/lib/packages";
@@ -48,6 +48,7 @@ export async function updatePackagePricing(formData: FormData) {
   revalidatePath("/packages");
   revalidatePath("/reserve");
   revalidatePath("/admin/content");
+  revalidateTag("venue-packages", "max");
 }
 
 export async function addPointOfInterest(formData: FormData) {
@@ -86,6 +87,7 @@ export async function addPointOfInterest(formData: FormData) {
 
   revalidatePath("/things-to-do");
   revalidatePath("/admin/content");
+  revalidateTag("points-of-interest", "max");
 }
 
 export async function removePointOfInterest(formData: FormData) {
@@ -103,6 +105,7 @@ export async function removePointOfInterest(formData: FormData) {
   await prisma.pointOfInterest.delete({ where: { id } }).catch(() => {});
   revalidatePath("/things-to-do");
   revalidatePath("/admin/content");
+  revalidateTag("points-of-interest", "max");
 }
 
 export async function updatePointOfInterest(formData: FormData) {
@@ -144,4 +147,5 @@ export async function updatePointOfInterest(formData: FormData) {
 
   revalidatePath("/things-to-do");
   revalidatePath("/admin/content");
+  revalidateTag("points-of-interest", "max");
 }

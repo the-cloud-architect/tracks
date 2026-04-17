@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 import { formatUsd, getVenuePackages } from "@/lib/packages";
 
@@ -51,7 +52,7 @@ export default async function PackagesPage() {
   return (
     <main className="px-6 py-14 sm:px-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <section className="soft-panel rounded-3xl p-8 sm:p-10">
+        <section data-reveal className="soft-panel rounded-3xl p-8 sm:p-10">
           <p className="eyebrow">Packages and pricing</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-5xl">
             Wedding packages built for intimate celebrations and full weekend stays.
@@ -66,7 +67,7 @@ export default async function PackagesPage() {
           </p>
         </section>
 
-        <section className="space-y-5">
+        <section data-reveal className="space-y-5">
           {venuePackages.map((pkg) => (
             <article key={pkg.key} className="soft-panel overflow-hidden rounded-3xl">
               <div className="grid gap-0 lg:grid-cols-[0.9fr_1.4fr]">
@@ -90,11 +91,13 @@ export default async function PackagesPage() {
                 </div>
 
                 <div className="p-6">
-                  <div className="mb-5 overflow-hidden rounded-2xl">
-                    <img
+                  <div className="relative mb-5 h-60 overflow-hidden rounded-2xl">
+                    <Image
                       src={packageImageByKey[pkg.key]}
                       alt={`${pkg.name} package visual`}
-                      className="h-60 w-full object-cover"
+                      fill
+                      sizes="(min-width: 1024px) 45vw, 100vw"
+                      className="object-cover"
                     />
                   </div>
 
@@ -125,7 +128,7 @@ export default async function PackagesPage() {
           ))}
         </section>
 
-        <div className="soft-panel rounded-2xl p-5 text-base leading-8 text-zinc-700 sm:text-lg">
+        <div data-reveal className="soft-panel rounded-2xl p-5 text-base leading-8 text-zinc-700 sm:text-lg">
           Optional enhancements such as catering support and wedding management services can be
           added to shape the weekend around your guest experience, event flow, and hospitality
           priorities.

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "leaflet/dist/leaflet.css";
 
 :root {
   --background: #f7f3ef;
@@ -118,16 +117,7 @@ body:has(main[data-home="true"]) > header {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  main h1,
-  main h2,
-  main h3,
-  main p,
-  main li,
-  main label,
-  main input,
-  main textarea,
-  main button,
-  main a {
+  main [data-reveal] {
     animation: gentleRise 0.55s ease both;
   }
 

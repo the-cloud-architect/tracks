@@ -1,4 +1,5 @@
 import { getPrismaClient } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
 export type PointOfInterestView = {
   id: string;
@@ -67,24 +68,35 @@ async function ensureDefaultPointsOfInterest() {
     .catch(() => {});
 }
 
+const getCachedPointsOfInterest = unstable_cache(
+  async () => {
+    const prisma = getPrismaClient();
+    return prisma.pointOfInterest
+      .findMany({
+        where: { isActive: true },
+        orderBy: [{ category: "asc" }, { name: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          category: true,
+          description: true,
+          latitude: true,
+          longitude: true,
+          externalUrl: true,
+        },
+      })
+      .catch(() => []);
+  },
+  ["points-of-interest"],
+  {
+    revalidate: 3600,
+    tags: ["points-of-interest"],
+  },
+);
+
 export async function getPointsOfInterest(): Promise<PointOfInterestView[]> {
-  const prisma = getPrismaClient();
   await ensureDefaultPointsOfInterest();
-  const rows = await prisma.pointOfInterest
-    .findMany({
-      where: { isActive: true },
-      orderBy: [{ category: "asc" }, { name: "asc" }],
-      select: {
-        id: true,
-        name: true,
-        category: true,
-        description: true,
-        latitude: true,
-        longitude: true,
-        externalUrl: true,
-      },
-    })
-    .catch(() => []);
+  const rows = await getCachedPointsOfInterest();
 
   if (rows.length === 0) {
     return DEFAULT_POINTS_OF_INTEREST;
