@@ -14,12 +14,14 @@ export type { PackageTier, VenuePackage };
 
 const getCachedPackageConfigs = unstable_cache(
   async (): Promise<Array<Pick<PackageConfig, "tier" | "priceCents" | "depositCents">>> => {
-    const prisma = getPrismaClient();
-    return prisma.packageConfig
-      .findMany({
+    try {
+      const prisma = getPrismaClient();
+      return await prisma.packageConfig.findMany({
         select: { tier: true, priceCents: true, depositCents: true },
-      })
-      .catch(() => []);
+      });
+    } catch {
+      return [];
+    }
   },
   ["venue-packages"],
   {

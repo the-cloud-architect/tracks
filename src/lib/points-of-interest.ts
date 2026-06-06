@@ -50,9 +50,9 @@ export const DEFAULT_POINTS_OF_INTEREST: PointOfInterestView[] = [
   },
 ];
 async function ensureDefaultPointsOfInterest() {
-  const prisma = getPrismaClient();
-  await prisma.pointOfInterest
-    .createMany({
+  try {
+    const prisma = getPrismaClient();
+    await prisma.pointOfInterest.createMany({
       data: DEFAULT_POINTS_OF_INTEREST.map((point) => ({
         id: point.id,
         name: point.name,
@@ -64,15 +64,17 @@ async function ensureDefaultPointsOfInterest() {
         isActive: true,
       })),
       skipDuplicates: true,
-    })
-    .catch(() => {});
+    });
+  } catch {
+    // Fall back to baked-in defaults when the DB is unavailable.
+  }
 }
 
 const getCachedPointsOfInterest = unstable_cache(
   async () => {
-    const prisma = getPrismaClient();
-    return prisma.pointOfInterest
-      .findMany({
+    try {
+      const prisma = getPrismaClient();
+      return await prisma.pointOfInterest.findMany({
         where: { isActive: true },
         orderBy: [{ category: "asc" }, { name: "asc" }],
         select: {
@@ -84,8 +86,10 @@ const getCachedPointsOfInterest = unstable_cache(
           longitude: true,
           externalUrl: true,
         },
-      })
-      .catch(() => []);
+      });
+    } catch {
+      return [];
+    }
   },
   ["points-of-interest"],
   {
@@ -109,11 +113,13 @@ export async function getPointsOfInterest(): Promise<PointOfInterestView[]> {
 }
 
 export async function getPointsOfInterestForAdmin() {
-  const prisma = getPrismaClient();
   await ensureDefaultPointsOfInterest();
-  return prisma.pointOfInterest
-    .findMany({
+  try {
+    const prisma = getPrismaClient();
+    return await prisma.pointOfInterest.findMany({
       orderBy: [{ category: "asc" }, { name: "asc" }],
-    })
-    .catch(() => []);
+    });
+  } catch {
+    return [];
+  }
 }

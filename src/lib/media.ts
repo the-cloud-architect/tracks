@@ -10,6 +10,11 @@ type GalleryAsset = {
   objectKey: string;
 };
 
+type HeroMediaAsset = {
+  objectKey: string;
+  sourceUrl: string | null;
+};
+
 export type HomeHeroMedia = {
   desktopVideoUrl: string;
   mobileVideoUrl: string;
@@ -23,9 +28,9 @@ const DEFAULT_HERO_POSTER_URL = "/images/hero-share.jpg";
 
 const getCachedGalleryAssets = unstable_cache(
   async (): Promise<GalleryAsset[]> => {
-    const prisma = getPrismaClient();
-    return prisma.mediaAsset
-      .findMany({
+    try {
+      const prisma = getPrismaClient();
+      return await prisma.mediaAsset.findMany({
         where: { status: "ACTIVE", type: "PHOTO" },
         orderBy: { createdAt: "desc" },
         select: {
@@ -34,8 +39,10 @@ const getCachedGalleryAssets = unstable_cache(
           description: true,
           objectKey: true,
         },
-      })
-      .catch(() => []);
+      });
+    } catch {
+      return [];
+    }
   },
   ["gallery-media"],
   {
@@ -46,9 +53,10 @@ const getCachedGalleryAssets = unstable_cache(
 
 const getCachedHomeHeroMedia = unstable_cache(
   async (): Promise<HomeHeroMedia> => {
-    const prisma = getPrismaClient();
-    const assets = await prisma.mediaAsset
-      .findMany({
+    let assets: HeroMediaAsset[] = [];
+    try {
+      const prisma = getPrismaClient();
+      assets = await prisma.mediaAsset.findMany({
         where: {
           status: "ACTIVE",
           type: "VIDEO",
@@ -60,8 +68,10 @@ const getCachedHomeHeroMedia = unstable_cache(
           objectKey: true,
           sourceUrl: true,
         },
-      })
-      .catch(() => []);
+      });
+    } catch {
+      assets = [];
+    }
 
     const assetBySource = new Map(
       assets
