@@ -23,8 +23,35 @@ export type HomeHeroMedia = {
   heroPosterUrl: string;
 };
 
-const DEFAULT_HERO_VIDEO_URL = "/videos/wedding-hero.mp4";
-const DEFAULT_HERO_POSTER_URL = "/images/hero-share.jpg";
+function normalizeBasePath(value: string | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "/") {
+    return "";
+  }
+
+  const withoutTrailingSlash = trimmed.replace(/\/+$/, "");
+  return withoutTrailingSlash.startsWith("/") ? withoutTrailingSlash : `/${withoutTrailingSlash}`;
+}
+
+function withBasePath(url: string) {
+  if (!url.startsWith("/") || url.startsWith("//")) {
+    return url;
+  }
+
+  const basePath = normalizeBasePath(process.env.NEXT_PUBLIC_BASE_PATH);
+  if (!basePath || url === basePath || url.startsWith(`${basePath}/`)) {
+    return url;
+  }
+
+  return `${basePath}${url}`;
+}
+
+const DEFAULT_HERO_VIDEO_URL = withBasePath("/videos/wedding-hero.mp4");
+const DEFAULT_HERO_POSTER_URL = withBasePath("/images/hero-share.jpg");
 
 const getCachedGalleryAssets = unstable_cache(
   async (): Promise<GalleryAsset[]> => {
@@ -83,17 +110,20 @@ const getCachedHomeHeroMedia = unstable_cache(
       assetBySource.get("HERO_VIDEO_DESKTOP") ?? assetBySource.get("HERO_VIDEO") ?? null;
     const mobileVideoKey = assetBySource.get("HERO_VIDEO_MOBILE") ?? desktopVideoKey;
 
-    const desktopVideoUrl =
-      (desktopVideoKey && tryGetR2ObjectUrl(desktopVideoKey)) ?? DEFAULT_HERO_VIDEO_URL;
+    const desktopVideoUrl = withBasePath(
+      (desktopVideoKey && tryGetR2ObjectUrl(desktopVideoKey)) ?? DEFAULT_HERO_VIDEO_URL,
+    );
     const mobileVideoUrl =
-      (mobileVideoKey && tryGetR2ObjectUrl(mobileVideoKey)) ?? desktopVideoUrl;
+      withBasePath((mobileVideoKey && tryGetR2ObjectUrl(mobileVideoKey)) ?? desktopVideoUrl);
 
-    const desktopPosterUrl =
+    const desktopPosterUrl = withBasePath(
       (desktopVideoKey && tryGetR2ObjectUrl(getVideoThumbnailObjectKey(desktopVideoKey))) ??
-      DEFAULT_HERO_POSTER_URL;
-    const mobilePosterUrl =
+        DEFAULT_HERO_POSTER_URL,
+    );
+    const mobilePosterUrl = withBasePath(
       (mobileVideoKey && tryGetR2ObjectUrl(getVideoThumbnailObjectKey(mobileVideoKey))) ??
-      desktopPosterUrl;
+        desktopPosterUrl,
+    );
 
     return {
       desktopVideoUrl,
